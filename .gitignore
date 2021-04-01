@@ -1,0 +1,18 @@
+# Pycharm idea
+.idea
+
+# Unit test
+
+# flask
+
+# Environments
+.env
+.venv
+venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+uitleg.docx

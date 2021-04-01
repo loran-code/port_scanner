@@ -1,1 +1,9 @@
-requests
+socket
+scapy
+os
+time
+datetime
+typing
+ipaddress
+pyttsx3
+argparse
