@@ -3,11 +3,14 @@
 # https://github.com/loran-code/port_scanner
 
 from controller.user_input_controller import parse_user_arguments
-from model.tcp.tcp import syn_scan, connect_scan, xmas_scan
+from model.tcp.tcp import connect_scan, xmas_scan, syn_scan
 
 # ip = "45.33.32.156"
-ip = "scanme.nmap.org"
-ports = list(range(20, 30))
+ip = "192.168.0.1"
+# ip = "scanme.nmap.org"
+ports = list(range(1, 1001))
+
+
 # ports = list(range(80, 85))
 
 

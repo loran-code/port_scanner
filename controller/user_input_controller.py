@@ -53,7 +53,7 @@ def parse_user_arguments():
     scan_type_us = args.get("us")
     check_scan_options(scan_type_tc)
 
-    connect_scan(ip, ports)
+    # connect_scan(ip, ports)
 
     # print(args)
 
