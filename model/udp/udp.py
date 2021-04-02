@@ -8,5 +8,10 @@ def udp_setup():
 
 class UDP:
 
+    # todo add scan method parameters
+    def __init__(self, ip, ports):
+        self.ip = ip
+        self.ports = ports
+
     def udp_scan(self):
         pass

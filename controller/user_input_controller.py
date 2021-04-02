@@ -1,6 +1,7 @@
 import argparse
 
 from model.user_input_model import check_ip, check_port, check_port_range, check_scan_options, check_user_input
+from model.tcp.tcp import connect_scan, syn_scan, xmas_scan
 
 
 def parse_user_arguments():
@@ -29,26 +30,31 @@ def parse_user_arguments():
     args = vars(parser.parse_args())
 
     ip = args.get("t")
-    check_ip(ip)
+    ip = check_ip(ip)
 
     if args.get("p") is not None:
-        check_port(args.get("p"))
+        ports = check_port(args.get("p"))
     elif args.get("pl") is not None:
-        check_port(args.get("pl"))
+        ports = check_port(args.get("pl"))
     elif args.get("pr") is not None:
         port_range = args.get("pr")
-        if len(port_range) > 2:
-            return print("Please specify a range with 2 integers e.g. -pr / -portrange 20 100")
+        if len(port_range) <= 1 or len(port_range) > 2:
+            return print("Specify a range with 2 integers e.g. -pr / -portrange 20 100")
         port_range = range(port_range[0], port_range[1])
-        check_port_range(port_range)
+        ports = check_port_range(port_range)
     else:
-        print("Something went wrong with the ports")
+        print("No port range has been specified defaulting to portrange 1-1000")
+        ports = check_port_range(range(1, 1001))
+
 
     scan_type_tc = args.get("tc")
     scan_type_ts = args.get("ts")
     scan_type_tx = args.get("tx")
     scan_type_us = args.get("us")
     check_scan_options(scan_type_tc)
+
+    connect_scan(ip, ports)
+
     # print(args)
 
     # check_user_input(ip, port, port_list,  port_range, scan_type_tc,

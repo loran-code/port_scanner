@@ -12,6 +12,7 @@
 
 ### Ideas
 1. Have sound on that informs the user if the scan is finished.
+2. Feedback op keypress while sacnning
 
 ### of interest
 [git1](https://github.com/interference-security/Multiport/blob/master/multiport.py)

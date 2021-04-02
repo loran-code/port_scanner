@@ -12,7 +12,7 @@ def check_user_input(*args):
 
 
 def check_port(ports):
-    """Check if valid port(s) / port range has been given"""
+    """Check if valid ports has been given"""
 
     if ports is None:
         ports = list(range(1, 1001))  # Assign the first 1000 ports if no port has been given
@@ -43,7 +43,9 @@ def check_port_range(ports):
             print(f"Make sure the port range is between {MIN_PORT_NUMBER} and {MAX_PORT_NUMBER}")
             return None
 
-    print(f"total of {len(valid_ports)} ports will be scanned")
+    print(f"total of {len(valid_ports)} ports will be scanned \n"
+          f"Starting at port {valid_ports[0]} ending at port {valid_ports[-1]} ")
+
     valid_ports.sort()
     return valid_ports
 
@@ -53,7 +55,7 @@ def check_ip(ip):
 
     try:
         IPv4Address(ip)
-        return ip
+        return print(f"target: {ip}")
     except ValueError as errorCode:
         return print(errorCode)
 
