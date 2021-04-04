@@ -2,15 +2,14 @@
 # v1.0
 # https://github.com/loran-code/port_scanner
 
-from model.scans.tcp.connect_scan import connect_scan
-from model.scans.tcp.syn_scan import syn_scan
-from model.scans.tcp.xmas_scan import xmas_scan
+from controller.user_input_controller import parse_user_arguments
+
 
 # ip = "45.33.32.156"
 # ip = "192.168.0.1"
-ip = "scanme.nmap.org"
+# ip = "scanme.nmap.org"
 # ports = list(range(1, 1024))
-ports = list(range(21, 23))
+# ports = list(range(21, 23))
 # ports = list(range(80, 85))
 
 
@@ -31,10 +30,8 @@ def main():
         - date time
         """
     # banner()
-    connect_scan(ip, ports)
-    # syn_scan(ip, ports)
-    # xmas_scan(ip, ports)
-    # parse_user_arguments()
+    # gather_user_input()
+    parse_user_arguments()
 
 
 def banner():

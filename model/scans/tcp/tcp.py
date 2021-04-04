@@ -17,7 +17,7 @@ def tcp_setup(userinput):
         print(f"input {userinput} has been resolved to ip: {ip}")
         return sock, ip
 
-    return sock, userinput  # Return connection setup and ip address
+    return sock, userinput  # Return socket setup and ip address
 
 
 def start_scan_info(ip):
@@ -42,10 +42,3 @@ def finish_scan_info(port_counter, ports, tick):
     print(f"total of {port_counter} port(s) open out of the {len(ports)} port(s) scanned")
     print(f"Scan completed in: {scan_time}")
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
-
-# class TCP:
-#
-#     # todo add scan method parameters
-#     def __init__(self, ip, ports):
-#         self.ip = ip
-#         self.ports = ports

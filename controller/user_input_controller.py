@@ -1,6 +1,6 @@
 import argparse
 
-from model.user_input_model import check_ip, check_port, check_port_range, check_scan_options, check_user_input
+from model.user_input_model import UserInputModel
 
 
 def parse_user_arguments():
@@ -9,7 +9,6 @@ def parse_user_arguments():
     needed to check for valid input by parsing
     the variables as arguments to other methods
     """
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "-target", metavar="", type=str, required=True,
                         help="IP4V address that needs to be scanned")
@@ -18,56 +17,112 @@ def parse_user_arguments():
     parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 20-30")
     parser.add_argument("-to", "-timeout", metavar="", type=int, default=3, help="Timeout value (default 3)")
     parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
-    parser.add_argument("-o", "-output", metavar="", type=str, default=False, help="json or xml output format")
-    parser.add_argument("-s", "-sound", metavar="", type=str, default=False,
+    parser.add_argument("-o", "-output", action='store_true', help="json or xml output format")
+    parser.add_argument("-s", "-sound", action='store_true',
                         help="Activates sound to inform when a scan has been finished")
-    parser.add_argument("-tc", "-tcpconnect", metavar="", type=str, default=True,
-                        help="tcp connect scan (default if scan type is omitted)")
-    parser.add_argument("-ts", "-tcpsync", metavar="", type=str, default=False, help="tcp sync scan")
-    parser.add_argument("-tx", "-tcpxmas", metavar="", type=str, default=False, help="tcp xmas scan")
-    parser.add_argument("-us", "-udpscan", metavar="", type=str, default=False, help="udp scan")
+    parser.add_argument("-tc", "-tcpconnect", action='store_true', help="tcp connect scan (default if scan type is "
+                                                                        "omitted)")
+    parser.add_argument("-ts", "-tcpsync", action='store_true', help="tcp sync scan")
+    parser.add_argument("-tx", "-tcpxmas", action='store_true', help="tcp xmas scan")
+    parser.add_argument("-us", "-udpscan", action='store_true', help="udp scan")
     args = vars(parser.parse_args())
 
+    print(args)
+
+    ip = parse_user_ip_options(args)
+    ports = parse_user_port_options(args)
+    remaining_options = parse_remaining_options(args)
+    scan_type = parse_user_scan_options(args)
+
+    scan_object = UserInputModel(ip, ports, scan_type)
+
+    scan_object.start_scan(ip, ports, scan_type)
+
+    return scan_object
+
+
+def parse_user_ip_options(args):
+    """Parse the user input and returns what the ip of the target is"""
+
     ip = args.get("t")
-    check_ip(ip)
+    return UserInputModel.check_ip(ip)
+
+
+def parse_user_port_options(args):
+    """Parse the user input and returns the ports that will be scanned."""
 
     if args.get("p") is not None:
-        ports = check_port(args.get("p"))
+        ports = args.get("p")
+        return UserInputModel.check_port(ports)
+
     elif args.get("pl") is not None:
-        ports = check_port(args.get("pl"))
+        ports = args.get("pl")
+        return UserInputModel.check_port(ports)
+
     elif args.get("pr") is not None:
         port_range = args.get("pr")
+
         if len(port_range) <= 1 or len(port_range) > 2:
             return print("Specify a range with 2 integers e.g. -pr / -portrange 20 100")
+
         port_range = range(port_range[0], port_range[1])
-        ports = check_port_range(port_range)
+        return UserInputModel.check_port_range(port_range)
+
     else:
         print("No port range has been specified defaulting to portrange 1-1024")
-        ports = check_port_range(range(1, 1024))
+        return UserInputModel.check_port_range(range(1, 1024))
 
 
-    scan_type_tc = args.get("tc")
-    scan_type_ts = args.get("ts")
-    scan_type_tx = args.get("tx")
-    scan_type_us = args.get("us")
-    check_scan_options(scan_type_tc)
+def parse_remaining_options(args):
+    """Parse the user input and returns what remaining options have been chosen"""
 
-    # connect_scan(ip, ports)
+    remaining_options = {}
 
-    # print(args)
+    if args.get("to") is not None:
+        timeout = args.get("to")
+        remaining_options["to"] = timeout
 
-    # check_user_input(ip, port, port_list,  port_range, scan_type_tc,
-    #                  scan_type_ts, scan_type_tx, scan_type_us)
+    if args.get("th") is not None:
+        threading = args.get("th")
+        remaining_options["th"] = threading
 
-# class UserInput:
-#
-#     # def __init__(self):
-#     #     self.success = success
-#
-#     def get_user_input(self, ip: IPv4Address, port: [MIN_PORT_NUMBER, 1024],
-#                        scan_options: [], success: bool):
-#         """collect the user input and parse it to the model layer"""
-#
-#         self.check_ip(ip)
-#         self.check_port(port)
-#         self.check_scan_options(scan_options)
+    if args.get("o") is not False:
+        output = args.get("o")
+        remaining_options["o"] = output
+
+    if args.get("s") is not False:
+        sound = args.get("s")
+        remaining_options["s"] = sound
+
+    return remaining_options
+
+
+def parse_user_scan_options(args):
+    """Parse the user input and returns what scan options has been chosen"""
+
+    if args.get("tc") is not False:
+        return "tc"
+
+    elif args.get("ts") is not False:
+        return "ts"
+
+    elif args.get("tx") is not False:
+        return "tx"
+
+    elif args.get("us") is not False:
+        return "us"
+
+    else:
+        print("No scan type has been specified defaulting to connect scan")
+        return "tc"
+
+
+# def gather_user_input():
+#     """Pass the user input into methods that check if the input is valid"""
+
+# model = parse_user_arguments()
+# model.check_ip(model, model.target)
+# model.check_port(model, model.ports)
+# model.check_port_range(model.ports) if else
+# model.check_scan_options(model, model.scan_type)
+# model.check_remaining_options(model, model.remaining)
