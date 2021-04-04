@@ -8,3 +8,4 @@ typing
 ipaddress
 pyttsx3
 argparse
+colorama

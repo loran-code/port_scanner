@@ -1,14 +1,17 @@
 from ipaddress import IPv4Address
 
-from model.constants import MIN_PORT_NUMBER, MAX_PORT_NUMBER
+from model.constants import MIN_PORT_NUMBER, MAX_PORT_NUMBER, DEFAULT_TIMEOUT, DEFAULT_THREADS, DEFAULT_OUTPUT, \
+    DEFAULT_SOUND
 
 valid_ports = []
 
 
-def check_user_input(*args):
-    """Check if the user input is valid"""
-
-    # if
+def check_user_input(target: str, ports: [int], **kwargs):
+    """Check if the user input is valid and set default settings if none are given by the user"""
+    kwargs.setdefault("timeout", DEFAULT_TIMEOUT)
+    kwargs.setdefault("threading", DEFAULT_THREADS)
+    kwargs.setdefault("output", DEFAULT_OUTPUT)
+    kwargs.setdefault("sound", DEFAULT_SOUND)
 
 
 def check_port(ports):

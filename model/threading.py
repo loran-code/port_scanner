@@ -1,6 +1,4 @@
-import threading
 from queue import Queue
-from model.tcp.tcp import connect_scan
 
 queue = Queue
 open_ports = []

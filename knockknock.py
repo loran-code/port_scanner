@@ -2,16 +2,15 @@
 # v1.0
 # https://github.com/loran-code/port_scanner
 
-from controller.user_input_controller import parse_user_arguments
-from model.tcp.tcp import connect_scan, xmas_scan, syn_scan
+from model.scans.tcp.connect_scan import connect_scan
+from model.scans.tcp.syn_scan import syn_scan
+from model.scans.tcp.xmas_scan import xmas_scan
 
 # ip = "45.33.32.156"
 # ip = "192.168.0.1"
 ip = "scanme.nmap.org"
 # ports = list(range(1, 1024))
 ports = list(range(21, 23))
-
-
 # ports = list(range(80, 85))
 
 
@@ -45,7 +44,7 @@ def banner():
 
 
 def run_app():
-    """Starts the application"""
+    """Starts the gui application"""
     pass
 
 

@@ -1,7 +1,6 @@
 import argparse
 
 from model.user_input_model import check_ip, check_port, check_port_range, check_scan_options, check_user_input
-from model.tcp.tcp import connect_scan, syn_scan, xmas_scan
 
 
 def parse_user_arguments():
@@ -17,9 +16,9 @@ def parse_user_arguments():
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
     parser.add_argument("-pl", "-portlist", metavar="", nargs='+', type=int, help="Port list e.g. 21,22,80")
     parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 20-30")
-    parser.add_argument("-to", "-timeout", metavar="", type=int, default=2, help="Timeout value (default 2)")
-    parser.add_argument("-th", "-threading", metavar="", type=int, default=1, help="Amount of threads (default 1)")
-    parser.add_argument("-o", "-output", metavar="", type=str, help="json or xml output format")
+    parser.add_argument("-to", "-timeout", metavar="", type=int, default=3, help="Timeout value (default 3)")
+    parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
+    parser.add_argument("-o", "-output", metavar="", type=str, default=False, help="json or xml output format")
     parser.add_argument("-s", "-sound", metavar="", type=str, default=False,
                         help="Activates sound to inform when a scan has been finished")
     parser.add_argument("-tc", "-tcpconnect", metavar="", type=str, default=True,
@@ -30,7 +29,7 @@ def parse_user_arguments():
     args = vars(parser.parse_args())
 
     ip = args.get("t")
-    ip = check_ip(ip)
+    check_ip(ip)
 
     if args.get("p") is not None:
         ports = check_port(args.get("p"))
@@ -43,7 +42,7 @@ def parse_user_arguments():
         port_range = range(port_range[0], port_range[1])
         ports = check_port_range(port_range)
     else:
-        print("No port range has been specified defaulting to portrange 1-1000")
+        print("No port range has been specified defaulting to portrange 1-1024")
         ports = check_port_range(range(1, 1024))
 
 
@@ -65,7 +64,7 @@ def parse_user_arguments():
 #     # def __init__(self):
 #     #     self.success = success
 #
-#     def get_user_input(self, ip: IPv4Address, port: [MIN_PORT_NUMBER, 1000],
+#     def get_user_input(self, ip: IPv4Address, port: [MIN_PORT_NUMBER, 1024],
 #                        scan_options: [], success: bool):
 #         """collect the user input and parse it to the model layer"""
 #
