@@ -6,9 +6,10 @@ from controller.user_input_controller import parse_user_arguments
 from model.tcp.tcp import connect_scan, xmas_scan, syn_scan
 
 # ip = "45.33.32.156"
-ip = "192.168.0.1"
-# ip = "scanme.nmap.org"
-ports = list(range(1, 1001))
+# ip = "192.168.0.1"
+ip = "scanme.nmap.org"
+# ports = list(range(1, 1024))
+ports = list(range(21, 23))
 
 
 # ports = list(range(80, 85))

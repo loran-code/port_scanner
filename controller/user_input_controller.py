@@ -44,7 +44,7 @@ def parse_user_arguments():
         ports = check_port_range(port_range)
     else:
         print("No port range has been specified defaulting to portrange 1-1000")
-        ports = check_port_range(range(1, 1001))
+        ports = check_port_range(range(1, 1024))
 
 
     scan_type_tc = args.get("tc")
