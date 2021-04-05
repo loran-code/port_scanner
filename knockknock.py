@@ -3,14 +3,7 @@
 # https://github.com/loran-code/port_scanner
 
 from controller.user_input_controller import parse_user_arguments
-
-
-# ip = "45.33.32.156"
-# ip = "192.168.0.1"
-# ip = "scanme.nmap.org"
-# ports = list(range(1, 1024))
-# ports = list(range(21, 23))
-# ports = list(range(80, 85))
+from utils.banner import banner
 
 
 def main():
@@ -30,14 +23,7 @@ def main():
         - date time
         """
     # banner()
-    # gather_user_input()
     parse_user_arguments()
-
-
-def banner():
-    """prints pretty banner"""
-    banner_text = open('utils/banner.txt', 'r').read()
-    print(banner_text)
 
 
 def run_app():
@@ -49,5 +35,5 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print("\n Thank you for knocking, goodbye!")
+        print("\n Thank you for knocking, bye!")
         quit()

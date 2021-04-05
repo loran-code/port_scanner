@@ -1,6 +1,11 @@
+import re
+import socket
 from ipaddress import IPv4Address
 
 # from controller.user_input_controller import parse_user_arguments
+from scapy.all import *
+from scapy.layers.inet import IP, ICMP
+
 from model.constants import MIN_PORT_NUMBER, MAX_PORT_NUMBER, DEFAULT_TIMEOUT, DEFAULT_THREADS, DEFAULT_OUTPUT, \
     DEFAULT_SOUND
 from model.scans.tcp.connect_scan import connect_scan
@@ -25,19 +30,28 @@ class UserInputModel:
         self.sound = kwargs.get("s", DEFAULT_SOUND)
 
     @staticmethod
-    def check_ip(ip):
+    def check_ip(userinput):
         """Check if a valid ip address has been given"""
+        ping_host(userinput)  # check if target is up else stop scan
+
+        if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", userinput):  # Check if a hostname has been given
+            ip = socket.gethostbyname(userinput)  # Change hostname to ip address
+            print(f"input {userinput} has been resolved to ip: {ip}")
+            try:
+                IPv4Address(ip)
+                return ip
+            except ValueError as errorCode:
+                return print(errorCode)
 
         try:
-            IPv4Address(ip)
-            print(f"valid target: {ip}")
-            return ip
+            IPv4Address(userinput)
+            return userinput
         except ValueError as errorCode:
             return print(errorCode)
 
     @staticmethod
     def check_port(ports):
-        """Check if valid ports has been given"""
+        """Check if valid ports have been given"""
 
         if ports is None:
             ports = list(range(1, 1001))  # Assign the first 1000 ports if no port has been given
@@ -52,7 +66,9 @@ class UserInputModel:
                 valid_ports.append(port)
                 print(f"port {port} has been added")
             else:
-                print("No valid port number has been given")
+                print("No valid port number has been given. \n"
+                      "Make sure the portnumber is not smaller then 1 and larger then 65535.")
+                exit(1)
 
         valid_ports.sort()
         return valid_ports
@@ -82,7 +98,7 @@ class UserInputModel:
 
     @staticmethod
     def start_scan(ip, ports, scan_type):
-        """Check if valid scan options has been given"""
+        """Start user specified scan method"""
 
         if scan_type == "tc":
             connect_scan(ip, ports)
@@ -92,3 +108,15 @@ class UserInputModel:
             xmas_scan(ip, ports)
         elif scan_type == "us":
             udp_setup(ip, ports)
+
+
+def ping_host(ip):
+    conf.verb = 0  # Hide output
+    try:
+        ping = sr1(IP(dst=ip) / ICMP())  # Ping the target
+        print("\n[*] Target is Up, Beginning Scan...")
+    except ConnectionError as errorCode:  # If ping fails
+        print(errorCode)
+        print("\n[!] Couldn't Ping Target")
+        print("[!] Exiting...")
+        sys.exit(1)

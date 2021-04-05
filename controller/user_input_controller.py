@@ -26,19 +26,26 @@ def parse_user_arguments():
     parser.add_argument("-tx", "-tcpxmas", action='store_true', help="tcp xmas scan")
     parser.add_argument("-us", "-udpscan", action='store_true', help="udp scan")
     args = vars(parser.parse_args())
-
-    print(args)
+    print(args)  # todo remove
+    # args = {"pr": [30, 10]}
 
     ip = parse_user_ip_options(args)
     ports = parse_user_port_options(args)
     remaining_options = parse_remaining_options(args)
     scan_type = parse_user_scan_options(args)
+    UserInputModel.start_scan(ip, ports, scan_type)
 
-    scan_object = UserInputModel(ip, ports, scan_type)
+    # ip = "45.33.32.156"
+    # ip = "192.168.0.1"
+    # ip = "scanme.nmap.org"
+    # ports = list(range(1, 1024))
+    # ports = list(range(21, 23))
+    # ports = list(range(30, 10))
+    # scan_type = "tc"
 
-    scan_object.start_scan(ip, ports, scan_type)
+    scan_data_object = UserInputModel(ip, ports, scan_type)  # Create an object with the parsed and verified data.
 
-    return scan_object
+    return scan_data_object
 
 
 def parse_user_ip_options(args):
@@ -62,14 +69,19 @@ def parse_user_port_options(args):
     elif args.get("pr") is not None:
         port_range = args.get("pr")
 
-        if len(port_range) <= 1 or len(port_range) > 2:
-            return print("Specify a range with 2 integers e.g. -pr / -portrange 20 100")
+        if len(port_range) < 2 or len(port_range) > 2:
+            print("Specify a range with 2 integers e.g. -pr / -portrange 20 100")
+            exit(1)
 
-        port_range = range(port_range[0], port_range[1])
-        return UserInputModel.check_port_range(port_range)
+        if port_range[0] > port_range[1]:
+            print("Specify the smallest number before specifying the large number. e.g. -pr / -portrange 20 100")
+            exit(1)
+        else:
+            port_range = range(port_range[0], port_range[1])
+            return UserInputModel.check_port_range(port_range)
 
     else:
-        print("No port range has been specified defaulting to portrange 1-1024")
+        print("No port range has been specified defaulting to portrange 1-1023")
         return UserInputModel.check_port_range(range(1, 1024))
 
 
@@ -102,27 +114,12 @@ def parse_user_scan_options(args):
 
     if args.get("tc") is not False:
         return "tc"
-
     elif args.get("ts") is not False:
         return "ts"
-
     elif args.get("tx") is not False:
         return "tx"
-
     elif args.get("us") is not False:
         return "us"
-
     else:
         print("No scan type has been specified defaulting to connect scan")
         return "tc"
-
-
-# def gather_user_input():
-#     """Pass the user input into methods that check if the input is valid"""
-
-# model = parse_user_arguments()
-# model.check_ip(model, model.target)
-# model.check_port(model, model.ports)
-# model.check_port_range(model.ports) if else
-# model.check_scan_options(model, model.scan_type)
-# model.check_remaining_options(model, model.remaining)

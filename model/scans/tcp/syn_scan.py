@@ -2,9 +2,11 @@ import colorama
 from colorama import Fore
 from logging import getLogger, ERROR
 from scapy.all import *
+from scapy.layers.inet import IP, TCP
 
-from model.scans.banner_grab import grab_banner
-from model.scans.tcp.tcp import finish_scan_info, start_scan_info, tcp_setup
+from model.scans.banner_grab import passive_banner_grab
+from model.scans.tcp.tcp import finish_scan_info, start_scan_info
+from model.constants import SYNACK
 
 getLogger("scapy.runtime").setLevel(ERROR)
 colorama.init()
@@ -15,37 +17,36 @@ def syn_scan(ip, ports):
     Takes the origin port from the target reply header"""
 
     port_counter = 0
-    sock, ip = tcp_setup(ip)  # Setup TCP socket and get the IP that will be scanned
-    tick = start_scan_info(ip)
-
-    # try:
-    #     srcport = RandShort()  # Generate Port Number
-    #     conf.verb = 0  # Hide output
-    #     SYNACKpkt = sr1(
-    #         IP(dst=target) / TCP(sport=srcport, dport=port, flags="S"))  # Send SYN and recieve RST-ACK or SYN-ACK
-    #     pktflags = SYNACKpkt.getlayer(TCP).flags  # Extract flags of recived packet
-    #     if pktflags == SYNACK:  # Cross reference Flags
-    #         return True  # If open, return true
-    #     else:
-    #         return False  # If closed, return false
-    #     RSTpkt = IP(dst=target) / TCP(sport=srcport, dport=port, flags="R")  # Construct RST packet
-    #     send(RSTpkt)  # Send RST packet
-    # except KeyboardInterrupt:  # In case the user needs to quit
-    #     RSTpkt = IP(dst=target) / TCP(sport=srcport, dport=port, flags="R")  # Built RST packet
-    #     send(RSTpkt)  # Send RST packet to whatever port is currently being scanned
-    #     print
-    #     "\n[*] User Requested Shutdown..."
-    #     print
-    #     "[*] Exiting..."
-    #     sys.exit(1)
+    tick = start_scan_info(ip, "syn scan")
 
     try:
         for port in ports:
-            result = sock.connect_ex((ip, port))
-            if result == 0:  # The error indicator is 0 if the operation succeeded
-                port_counter += 1
-                print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
-                grab_banner(sock)
+            try:
+                src_port = RandShort()  # Generate Port Number
+
+                # Send SYN and receive RST-ACK or SYN-ACK
+                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S"))
+
+                # Extract flags of received packet
+                pkt_flags = syn_ack_pkt.getlayer(TCP).flags
+
+                # Construct RST packet
+                rst_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
+
+                if pkt_flags == SYNACK:  # Cross reference Flags
+                    port_counter += 1
+                    print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
+                    send(rst_pkt)  # Send RST packet
+                else:
+                    send(rst_pkt)
+
+            except KeyboardInterrupt:  # In case the user needs to quit
+                src_port = RandShort()
+                rst_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
+                send(rst_pkt)
+                print("\n[*] User Requested Shutdown...")
+                print("[*] Exiting...")
+                sys.exit(1)
 
         if port_counter == 0:
             print(f"No open ports have been found")

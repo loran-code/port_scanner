@@ -1,4 +1,3 @@
-import re
 import socket
 from datetime import datetime
 import colorama
@@ -7,24 +6,20 @@ from colorama import Fore
 colorama.init()
 
 
-def tcp_setup(userinput):
+def tcp_setup():
     """Resolve hostname into an IP address and setup a TCP connection"""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(5)
 
-    if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", userinput):  # Check if a hostname has been given
-        ip = socket.gethostbyname(userinput)
-        print(f"input {userinput} has been resolved to ip: {ip}")
-        return sock, ip
-
-    return sock, userinput  # Return socket setup and ip address
+    return sock  # Return socket setup and ip address
 
 
-def start_scan_info(ip):
+def start_scan_info(ip, scan_type):
     """Print starting header about the scan that is being run"""
 
     tick = datetime.now()
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
+    print(f"Scan type: {scan_type}")
     print(f"Scanning target: {ip}")
     print(f"Scan started at: {tick}")
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
