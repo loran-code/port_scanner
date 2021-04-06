@@ -1,11 +1,12 @@
 socket
-ipaddress
-scapy
+ipaddress~=1.0.23
+scapy~=2.4.4
 os
 time
-datetime
+datetime~=4.3
 typing
 ipaddress
 pyttsx3
-argparse
-colorama
+argparse~=1.4.0
+colorama~=0.4.4
+wget~=3.2

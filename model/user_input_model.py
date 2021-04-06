@@ -1,17 +1,9 @@
-import re
-import socket
 from ipaddress import IPv4Address
 
-# from controller.user_input_controller import parse_user_arguments
 from scapy.all import *
-from scapy.layers.inet import IP, ICMP
 
-from model.constants import MIN_PORT_NUMBER, MAX_PORT_NUMBER, DEFAULT_TIMEOUT, DEFAULT_THREADS, DEFAULT_OUTPUT, \
-    DEFAULT_SOUND
-from model.scans.tcp.connect_scan import connect_scan
-from model.scans.tcp.syn_scan import syn_scan
-from model.scans.tcp.xmas_scan import xmas_scan
-from model.scans.udp.udp import udp_setup
+from model.constants import MIN_PORT_NUMBER, MAX_PORT_NUMBER
+from model.scans.scan_setup import ping_host
 
 valid_ports = []
 
@@ -24,10 +16,11 @@ class UserInputModel:
         self.target = target
         self.ports = ports
         self.scan_type = scan_type
-        self.timeout = kwargs.get("to", DEFAULT_TIMEOUT)
-        self.threading = kwargs.get("th", DEFAULT_THREADS)
-        self.output = kwargs.get("o", DEFAULT_OUTPUT)
-        self.sound = kwargs.get("s", DEFAULT_SOUND)
+        self.timeout = kwargs.get("to")
+        self.threading = kwargs.get("th")
+        self.output = kwargs.get("o")
+        self.sound = kwargs.get("s")
+        self.music = kwargs.get("music")
 
     @staticmethod
     def check_ip(userinput):
@@ -90,33 +83,25 @@ class UserInputModel:
         valid_ports.sort()
         return valid_ports
 
-    @staticmethod
-    def check_remaining_options(remaining_options):
-        """Check if the remaining options are valid input"""
+    # @staticmethod
+    # def check_remaining_options(optional_arguments):
+    #     """Check if the remaining options are enabled and parse the values to setup methods"""
+    #
+    #     timeout = optional_arguments.get("to")
+    #     # set_timeout(timeout)
+    #
+    #     threading = optional_arguments.get("th")
+    #     # set_threading(threading)
+    #
+    #     if optional_arguments.get("o") is True:
+    #         # save_ouput_to_file(True)
+    #         pass
+    #
+    #     if optional_arguments.get("db") is True:
+    #         # save_output_to_database(True)
+    #         pass
+    #
+    #     if optional_arguments.get("s") is True:
+    #         # alert_scan_finish_with_sound(True)
+    #         pass
 
-    pass
-
-    @staticmethod
-    def start_scan(ip, ports, scan_type):
-        """Start user specified scan method"""
-
-        if scan_type == "tc":
-            connect_scan(ip, ports)
-        elif scan_type == "ts":
-            syn_scan(ip, ports)
-        elif scan_type == "tx":
-            xmas_scan(ip, ports)
-        elif scan_type == "us":
-            udp_setup(ip, ports)
-
-
-def ping_host(ip):
-    conf.verb = 0  # Hide output
-    try:
-        ping = sr1(IP(dst=ip) / ICMP())  # Ping the target
-        print("\n[*] Target is Up, Beginning Scan...")
-    except ConnectionError as errorCode:  # If ping fails
-        print(errorCode)
-        print("\n[!] Couldn't Ping Target")
-        print("[!] Exiting...")
-        sys.exit(1)

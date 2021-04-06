@@ -1,6 +1,8 @@
 import argparse
 
+from model.scans.scan_setup import start_scan
 from model.user_input_model import UserInputModel
+from utils.banner import banner
 
 
 def parse_user_arguments():
@@ -9,7 +11,7 @@ def parse_user_arguments():
     needed to check for valid input by parsing
     the variables as arguments to other methods
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=banner())
     parser.add_argument("-t", "-target", metavar="", type=str, required=True,
                         help="IP4V address that needs to be scanned")
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
@@ -17,35 +19,35 @@ def parse_user_arguments():
     parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 20-30")
     parser.add_argument("-to", "-timeout", metavar="", type=int, default=3, help="Timeout value (default 3)")
     parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
-    parser.add_argument("-o", "-output", action='store_true', help="json or xml output format")
+    parser.add_argument("-o", "-output", action='store_true', help="Stores scan result in json and xml format")
+    parser.add_argument("-db", "-database", action='store_true', help="Stores the scan result into a SQLite database")
     parser.add_argument("-s", "-sound", action='store_true',
                         help="Activates sound to inform when a scan has been finished")
+    parser.add_argument("-music", action='store_true', help="Play some knocking music while you wait for the scan to "
+                                                            "finish")
     parser.add_argument("-tc", "-tcpconnect", action='store_true', help="tcp connect scan (default if scan type is "
                                                                         "omitted)")
     parser.add_argument("-ts", "-tcpsync", action='store_true', help="tcp sync scan")
     parser.add_argument("-tx", "-tcpxmas", action='store_true', help="tcp xmas scan")
     parser.add_argument("-us", "-udpscan", action='store_true', help="udp scan")
-    args = vars(parser.parse_args())
-    print(args)  # todo remove
-    # args = {"pr": [30, 10]}
+    args = vars(parser.parse_args())  # Create dictionary from the given command line arguments
 
-    ip = parse_user_ip_options(args)
-    ports = parse_user_port_options(args)
-    remaining_options = parse_remaining_options(args)
-    scan_type = parse_user_scan_options(args)
-    UserInputModel.start_scan(ip, ports, scan_type)
+    ip = parse_user_ip_options(args)  # Parse the given ip
+    ports = parse_user_port_options(args)  # Parse the given ports
+    remaining_options = parse_remaining_options(args)  # Parse the remaining options
+    scan_type = parse_user_scan_options(args)  # Parse the given scan_type
 
-    # ip = "45.33.32.156"
-    # ip = "192.168.0.1"
+    # Create object with the parsed data input
+    scan_data_object = UserInputModel(ip, ports, scan_type, **remaining_options)
+
+    # Pass the object to the start scan method
+    start_scan(scan_data_object)
+
+    return None
+
     # ip = "scanme.nmap.org"
     # ports = list(range(1, 1024))
     # ports = list(range(21, 23))
-    # ports = list(range(30, 10))
-    # scan_type = "tc"
-
-    scan_data_object = UserInputModel(ip, ports, scan_type)  # Create an object with the parsed and verified data.
-
-    return scan_data_object
 
 
 def parse_user_ip_options(args):
@@ -88,24 +90,18 @@ def parse_user_port_options(args):
 def parse_remaining_options(args):
     """Parse the user input and returns what remaining options have been chosen"""
 
-    remaining_options = {}
+    remaining_options = {"to": args.get("to"), "th": args.get("th")}
 
-    if args.get("to") is not None:
-        timeout = args.get("to")
-        remaining_options["to"] = timeout
+    if args.get("o"):
+        remaining_options["o"] = args.get("o")
 
-    if args.get("th") is not None:
-        threading = args.get("th")
-        remaining_options["th"] = threading
+    if args.get("db"):
+        remaining_options["db"] = args.get("db")
 
-    if args.get("o") is not False:
-        output = args.get("o")
-        remaining_options["o"] = output
+    if args.get("s"):
+        remaining_options["s"] = args.get("s")
 
-    if args.get("s") is not False:
-        sound = args.get("s")
-        remaining_options["s"] = sound
-
+    print(remaining_options)  # todo remove
     return remaining_options
 
 

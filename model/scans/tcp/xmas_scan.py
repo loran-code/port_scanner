@@ -4,16 +4,21 @@ from logging import getLogger, ERROR
 from scapy.all import *
 
 from model.scans.banner_grab import active_banner_grab
-from model.scans.tcp.tcp import finish_scan_info, start_scan_info, tcp_setup
+from model.scans.scan_utilities import finish_scan_info, start_scan_info
+from model.scans.tcp.tcp import tcp_setup
 
 getLogger("scapy.runtime").setLevel(ERROR)
 colorama.init()
 
 
-def xmas_scan(ip, ports):
+def xmas_scan(scan_data_object):
     """xmas scan - start """
     """syn scan - start half-open connection(SYN, SYN ACK, RST) with the target.
     Takes the origin port from the target reply header"""
+
+    ip = scan_data_object.target
+    ports = scan_data_object.ports
+    sound = scan_data_object.sound
 
     port_counter = 0
     sock, ip = tcp_setup(ip)  # Setup TCP socket and get the IP that will be scanned
@@ -61,4 +66,4 @@ def xmas_scan(ip, ports):
         print("Couldn't connect to server")
         sys.exit()
 
-    finish_scan_info(port_counter, ports, tick)
+    finish_scan_info(port_counter, ports, tick, sound)

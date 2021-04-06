@@ -5,16 +5,21 @@ from scapy.all import *
 from scapy.layers.inet import IP, TCP
 
 from model.scans.banner_grab import passive_banner_grab
-from model.scans.tcp.tcp import finish_scan_info, start_scan_info
+from model.scans.banner_grab import active_banner_grab
+from model.scans.scan_utilities import finish_scan_info, start_scan_info
 from model.constants import SYNACK
 
 getLogger("scapy.runtime").setLevel(ERROR)
 colorama.init()
 
 
-def syn_scan(ip, ports):
+def syn_scan(scan_data_object):
     """syn scan - start half-open connection(SYN, SYN ACK, RST) with the target.
     Takes the origin port from the target reply header"""
+
+    ip = scan_data_object.target
+    ports = scan_data_object.ports
+    sound = scan_data_object.sound
 
     port_counter = 0
     tick = start_scan_info(ip, "syn scan")
@@ -36,6 +41,7 @@ def syn_scan(ip, ports):
                 if pkt_flags == SYNACK:  # Cross reference Flags
                     port_counter += 1
                     print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
+                    passive_banner_grab(ip, port)
                     send(rst_pkt)  # Send RST packet
                 else:
                     send(rst_pkt)
@@ -61,4 +67,4 @@ def syn_scan(ip, ports):
         print("Couldn't connect to server")
         sys.exit()
 
-    finish_scan_info(port_counter, ports, tick)
+    finish_scan_info(port_counter, ports, tick, sound)

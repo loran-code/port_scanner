@@ -1,10 +1,12 @@
 import socket
 import re
-from datetime import datetime
 
 
-def udp_setup(userinput, timeout):
+def udp_setup(scan_data_object):
     """Resolve hostname into an IP address and setup an UDP connection"""
+    userinput = scan_data_object.target
+    timeout = scan_data_object.timeout
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(timeout)
 
