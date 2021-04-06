@@ -17,8 +17,9 @@ class UserInputModel:
         self.ports = ports
         self.scan_type = scan_type
         self.timeout = kwargs.get("to")
-        self.threading = kwargs.get("th")
-        self.output = kwargs.get("o")
+        self.threads = kwargs.get("th")
+        self.output_to_file = kwargs.get("o")
+        self.save_to_database = kwargs.get("db")
         self.sound = kwargs.get("s")
         self.music = kwargs.get("music")
 
@@ -29,7 +30,7 @@ class UserInputModel:
 
         if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", userinput):  # Check if a hostname has been given
             ip = socket.gethostbyname(userinput)  # Change hostname to ip address
-            print(f"input {userinput} has been resolved to ip: {ip}")
+            print(f"input \"{userinput}\" has been resolved to IP: {ip}")
             try:
                 IPv4Address(ip)
                 return ip
@@ -77,8 +78,7 @@ class UserInputModel:
                 print(f"Make sure the port range is between {MIN_PORT_NUMBER} and {MAX_PORT_NUMBER}")
                 return None
 
-        print(f"total of {len(valid_ports)} ports will be scanned \n"
-              f"Starting at port {valid_ports[0]} ending at port {valid_ports[-1]} ")
+        print(f"Starting at port {valid_ports[0]} ending at port {valid_ports[-1]} ")
 
         valid_ports.sort()
         return valid_ports

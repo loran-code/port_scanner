@@ -4,16 +4,15 @@ import sys
 import wget
 
 
-def active_banner_grab(banner):
+def active_banner_grab(sock):
     try:
-        banner = banner.recv(1024).decode("utf-8")
+        banner = sock.recv(1024).decode("utf-8")
         print(f"    {banner}\n")
+        return banner
     except socket.gaierror:
-        print('Hostname could not be resolved. Exiting')
-        sys.exit()
+        print("    No banner - Hostname could not be resolved")
     except socket.error:
-        print("Couldn't connect to server")
-        sys.exit()
+        print("    No banner - Could not connect")
 
 
 def passive_banner_grab(target, port):
@@ -29,4 +28,3 @@ def passive_banner_grab(target, port):
     # curl -s -I target | grep -e "Server: "
     # https: // securitytrails.com / blog / banner - grabbing
     pass
-

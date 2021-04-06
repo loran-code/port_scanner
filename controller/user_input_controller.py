@@ -11,13 +11,14 @@ def parse_user_arguments():
     needed to check for valid input by parsing
     the variables as arguments to other methods
     """
-    parser = argparse.ArgumentParser(description=banner())
+    parser = argparse.ArgumentParser()
+    # parser = argparse.ArgumentParser(description=banner())
     parser.add_argument("-t", "-target", metavar="", type=str, required=True,
                         help="IP4V address that needs to be scanned")
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
     parser.add_argument("-pl", "-portlist", metavar="", nargs='+', type=int, help="Port list e.g. 21,22,80")
     parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 20-30")
-    parser.add_argument("-to", "-timeout", metavar="", type=int, default=3, help="Timeout value (default 3)")
+    parser.add_argument("-to", "-timeout", metavar="", type=int, default=5, help="Timeout value (default 3)")
     parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
     parser.add_argument("-o", "-output", action='store_true', help="Stores scan result in json and xml format")
     parser.add_argument("-db", "-database", action='store_true', help="Stores the scan result into a SQLite database")
@@ -42,10 +43,10 @@ def parse_user_arguments():
 
     # Pass the object to the start scan method
     start_scan(scan_data_object)
-
     return None
 
     # ip = "scanme.nmap.org"
+    # ip = "localhost"
     # ports = list(range(1, 1024))
     # ports = list(range(21, 23))
 
@@ -108,13 +109,13 @@ def parse_remaining_options(args):
 def parse_user_scan_options(args):
     """Parse the user input and returns what scan options has been chosen"""
 
-    if args.get("tc") is not False:
+    if args.get("tc"):
         return "tc"
-    elif args.get("ts") is not False:
+    elif args.get("ts"):
         return "ts"
-    elif args.get("tx") is not False:
+    elif args.get("tx"):
         return "tx"
-    elif args.get("us") is not False:
+    elif args.get("us"):
         return "us"
     else:
         print("No scan type has been specified defaulting to connect scan")

@@ -3,6 +3,8 @@ from colorama import Fore
 from logging import getLogger, ERROR
 from scapy.all import *
 from scapy.layers.inet import IP, TCP
+from threading import Thread, Lock
+from queue import Queue
 
 from model.scans.banner_grab import passive_banner_grab
 from model.scans.banner_grab import active_banner_grab
@@ -12,6 +14,8 @@ from model.constants import SYNACK
 getLogger("scapy.runtime").setLevel(ERROR)
 colorama.init()
 
+que = Queue()
+print_lock = Lock()
 
 def syn_scan(scan_data_object):
     """syn scan - start half-open connection(SYN, SYN ACK, RST) with the target.
@@ -39,10 +43,10 @@ def syn_scan(scan_data_object):
                 rst_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
 
                 if pkt_flags == SYNACK:  # Cross reference Flags
-                    port_counter += 1
                     print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
-                    passive_banner_grab(ip, port)
+                    # passive_banner_grab(ip, port)
                     send(rst_pkt)  # Send RST packet
+                    port_counter += 1
                 else:
                     send(rst_pkt)
 
@@ -52,7 +56,7 @@ def syn_scan(scan_data_object):
                 send(rst_pkt)
                 print("\n[*] User Requested Shutdown...")
                 print("[*] Exiting...")
-                sys.exit(1)
+                sys.exit()
 
         if port_counter == 0:
             print(f"No open ports have been found")
