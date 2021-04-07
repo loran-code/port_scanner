@@ -77,6 +77,7 @@ def connect_scan(scan_data_object):
         'date time': str(now.strftime("%d-%m-%Y %H:%M")),
         'ip': ip,
         'scan type': "connect scan",
+        'scanned ports': ports,
         'open ports': [{
             'port': open_ports,
             'banner': banner_info

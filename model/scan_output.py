@@ -1,41 +1,71 @@
-from sys import platform
+import json
+import os
 from datetime import datetime
-import json, xml, os
+from sys import platform
+import xml.etree.ElementTree as ET
 
 
 def save_scan_info_to_file(scan_output):
     """parse scan data into json and xml file methods"""
     directory = check_platform()
 
-    # json_format(scan_output, directory)
+    json_format(scan_output, directory)  # JSON file
 
-    xml_format(scan_output, directory)
+    xml_format(scan_output, directory)  # XML file
 
 
 def json_format(scan_output, directory):
     """parse scan data into json format"""
+    now = datetime.now()
+    date_time = now.strftime("%d-%m-%Y_time_%H-%M")
     ip = scan_output.get("ip")
-    date_time = scan_output.get("date time")
 
     json_file = f'IP_{ip}_DATE_{date_time}.json'
     json_file = os.path.join(directory, json_file)
 
     with open(json_file, 'w') as file:
-        # json.dump(scan_output)
         file.write(json.dumps(scan_output, indent=1))
 
 
 def xml_format(scan_output, directory):
     """parse scan data into xml format"""
+    now = datetime.now()
+    date_time = now.strftime("%d-%m-%Y_time_%H-%M")
     ip = scan_output.get("ip")
-    date_time = scan_output.get("date time")
 
     xml_file = f'IP_{ip}_DATE_{date_time}.xml'
     xml_file = os.path.join(directory, xml_file)
 
-    # xml.parsers
+    root = ET.Element('scan_results')
+
+    date_time = ET.SubElement(root, 'date')
+    date_time.text = scan_output.get("date time")
+
+    ip = ET.SubElement(root, 'host')
+    ip.text = scan_output.get("ip")
+
+    scan_type = ET.SubElement(root, 'type')
+    scan_type.text = scan_output.get("scan type")
+
+    ports = ET.SubElement(root, 'ports')
+
+    for port in scan_output.get("scanned ports"):
+        scannend_ports = ET.SubElement(ports, 'scannedports')
+        scannend_ports.text = str(port)
+
+    open_ports = ET.SubElement(ports, 'openports')
+    for port in scan_output['open ports'][0]['port']:
+        open_ports.text = str(port)
+
+    banner = ET.SubElement(open_ports, 'banner')
+    for i in scan_output['open ports'][0]['banner']:
+        banner.text = str(i)
+
+    # todo bytes vs string & spread output instead of 1 line
+    data_to_xml = ET.tostringlist(root)
+
     with open(xml_file, 'w') as file:
-        pass
+        file.write(str(data_to_xml))
 
 
 def check_platform():
