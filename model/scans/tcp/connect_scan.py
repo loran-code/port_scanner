@@ -1,8 +1,9 @@
 import socket
 import sys
 import threading
-# from threading import Thread, Lock
+from datetime import datetime
 from queue import Queue
+
 import colorama
 from colorama import Fore
 
@@ -27,11 +28,14 @@ def connect_scan(scan_data_object):
     save_output_in_database = scan_data_object.save_to_database
     sound = scan_data_object.sound
 
-    port_counter = 0
+    open_ports = []
+    banner_info = []
+
     sock = tcp_setup(timeout)  # Setup TCP socket
     tick = start_scan_info(ip, "connect scan")
 
     try:
+        port_counter = 0
         for port in ports:
             try:
                 result = sock.connect_ex((ip, port))
@@ -39,14 +43,11 @@ def connect_scan(scan_data_object):
                     with print_lock:
                         print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
                         banner = active_banner_grab(sock)
-
-                        if write_output_to_file:
-                            save_scan_info_to_file(ip, port, banner, "connect scan")
-
-                        if save_output_in_database:
-                            save_scan_info_to_database(ip, port, banner, "connect scan")
-
                         sock.close()
+
+                        open_ports.append(port)  # add open port to list
+                        banner_info.append(banner)  # add corresponding banner to list
+
                         port_counter += 1
 
             except KeyboardInterrupt:
@@ -68,8 +69,28 @@ def connect_scan(scan_data_object):
     finally:
         sock.close()
 
-    finish_scan_info(port_counter, ports, tick, sound)
+    # open_ports = list(zip(open_ports, banner_info))
+    # print(open_ports)
+    # print(type(open_ports))
+    now = datetime.now()
+    scan_output = {
+        'date time': str(now.strftime("%d-%m-%Y %H:%M")),
+        'ip': ip,
+        'scan type': "connect scan",
+        'open ports': [{
+            'port': open_ports,
+            'banner': banner_info
+        },
+        ],
+    }
 
+    if write_output_to_file:
+        save_scan_info_to_file(scan_output)
+
+    if save_output_in_database:
+        save_scan_info_to_database(scan_output)
+
+    finish_scan_info(port_counter, ports, tick, sound)
 
 # t1 = threading.Thread(target=connect_scan)
 # t2 = threading.Thread(target=connect_scan)

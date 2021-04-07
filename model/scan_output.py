@@ -3,32 +3,37 @@ from datetime import datetime
 import json, xml, os
 
 
-def save_scan_info_to_file(ip, port, banner, scan_type):
+def save_scan_info_to_file(scan_output):
     """parse scan data into json and xml file methods"""
     directory = check_platform()
 
-    now = datetime.now()
-    date_time = now.strftime("%d-%m-%Y_time_%H-%M")
+    # json_format(scan_output, directory)
 
-    json_format(ip, port, banner, scan_type, date_time, directory)
-
-    xml_format(ip, port, banner, scan_type, date_time, directory)
+    xml_format(scan_output, directory)
 
 
-def json_format(ip, port, banner, scan_type, date_time, directory):
+def json_format(scan_output, directory):
     """parse scan data into json format"""
+    ip = scan_output.get("ip")
+    date_time = scan_output.get("date time")
+
     json_file = f'IP_{ip}_DATE_{date_time}.json'
     json_file = os.path.join(directory, json_file)
 
     with open(json_file, 'w') as file:
-        pass
+        # json.dump(scan_output)
+        file.write(json.dumps(scan_output, indent=1))
 
 
-def xml_format(ip, port, banner, scan_type, date_time, directory):
+def xml_format(scan_output, directory):
     """parse scan data into xml format"""
+    ip = scan_output.get("ip")
+    date_time = scan_output.get("date time")
+
     xml_file = f'IP_{ip}_DATE_{date_time}.xml'
     xml_file = os.path.join(directory, xml_file)
 
+    # xml.parsers
     with open(xml_file, 'w') as file:
         pass
 
