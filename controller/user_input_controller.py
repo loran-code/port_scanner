@@ -1,5 +1,6 @@
 import argparse
 
+
 from model.scans.scan_setup import start_scan
 from model.user_input_model import UserInputModel
 from utils.banner import banner
@@ -21,7 +22,7 @@ def parse_user_arguments():
     parser.add_argument("-to", "-timeout", metavar="", type=int, default=5, help="Timeout value (default 3)")
     parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
     parser.add_argument("-o", "-output", action='store_true', help="Stores scan result in json and xml format")
-    parser.add_argument("-db", "-database", action='store_true', help="Stores the scan result into a SQLite database")
+    parser.add_argument("-db", "-repository", action='store_true', help="Stores the scan result into a SQLite repository")
     parser.add_argument("-s", "-sound", action='store_true',
                         help="Activates sound to inform when a scan has been finished")
     parser.add_argument("-music", action='store_true', help="Play some knocking music while you wait for the scan to "

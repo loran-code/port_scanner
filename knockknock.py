@@ -12,7 +12,7 @@ def main():
         - UDP scan
         - XMAS scan
     - output format json y/n
-    - write to sqlite database y/n
+    - write to sqlite repository y/n
         - ip scanned
         - scan type used
         - ports scanned / port range

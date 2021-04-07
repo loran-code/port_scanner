@@ -6,7 +6,7 @@ time
 datetime~=4.3
 typing
 ipaddress
-pyttsx3
+pyttsx3~=2.90
 argparse~=1.4.0
 colorama~=0.4.4
 wget~=3.2

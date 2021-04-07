@@ -11,7 +11,7 @@ from model.scan_output import save_scan_info_to_file
 from model.scans.banner_grab import active_banner_grab
 from model.scans.scan_utilities import finish_scan_info, start_scan_info
 from model.scans.tcp.tcp import tcp_setup
-from model.sqlite_database import save_scan_info_to_database
+from model.repository.sqlite_database import save_scan_info_to_database
 
 colorama.init()  # initialize color options
 queue = Queue()  #
@@ -91,7 +91,7 @@ def connect_scan(scan_data_object):
     if save_output_in_database:
         save_scan_info_to_database(scan_output)
 
-    finish_scan_info(port_counter, ports, tick, sound)
+    finish_scan_info(port_counter, tick, scan_data_object)
 
 # t1 = threading.Thread(target=connect_scan)
 # t2 = threading.Thread(target=connect_scan)

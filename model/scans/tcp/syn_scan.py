@@ -3,14 +3,14 @@ from colorama import Fore
 from logging import getLogger, ERROR
 from scapy.all import *
 from scapy.layers.inet import IP, TCP
-from threading import Thread, Lock
+from threading import Lock
 from queue import Queue
 
 
 from model.scan_output import save_scan_info_to_file
 from model.scans.scan_utilities import finish_scan_info, start_scan_info
 from model.constants import SYNACK
-from model.sqlite_database import save_scan_info_to_database
+from model.repository.sqlite_database import save_scan_info_to_database
 
 getLogger("scapy.runtime").setLevel(ERROR)
 colorama.init()

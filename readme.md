@@ -1,11 +1,12 @@
 # port_scanner
 
 ### todo's
-- doorlopend rapporteert
-- XML/JSON
+#### Must
+- doorlopend rapporteert -> [on keypress](https://stackoverflow.com/questions/24072790/detect-key-press-in-python) 
 - SQLite
-  
 - unit testen
+
+#### Nice
 - Concurrency/Multithreading
 - GUI
 
