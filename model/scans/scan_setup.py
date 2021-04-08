@@ -12,8 +12,10 @@ from model.scans.udp.udp import udp_setup
 
 def ping_host(ip):
     conf.verb = 0  # Hide output
+    # todo ping target else stop scan
     try:
         ping = sr1(IP(dst=ip) / ICMP())  # Ping target with ICMP packet
+        print("no luck")
     except ConnectionError as errorCode:  # If ping fails
         print(errorCode)
         print("\n[!] Could not ping target")
@@ -28,9 +30,14 @@ def start_scan(scan_data_object):
     joke = scan_data_object.joke
     threads = scan_data_object.threads
 
+    # asyncio.gather(play_knocking_sound())
+    # asyncio.gather(play_joke())
+    # asyncio.get_event_loop().is_running()
+
     # todo multi threaded
     if knock:
-        play_knocking_sound()
+        pass
+        # asyncio.run(play_knocking_sound())
 
     # todo multi threaded
     if joke:

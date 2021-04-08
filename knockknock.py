@@ -11,13 +11,8 @@ def main():
     - type of scan tcp/udp
         - UDP scan
         - XMAS scan
-    - output format json y/n
-    - write to sqlite repository y/n
-        - ip scanned
-        - scan type used
-        - ports scanned / port range
-        - status open/closed
-        - date time
+    - code information
+    - tests
         """
     parse_user_arguments()
 
@@ -31,5 +26,5 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print("\n Thank you for knocking, bye!")
+        print("[*] User canceled scan\nThank you for knocking, bye!")
         quit()

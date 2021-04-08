@@ -19,7 +19,7 @@ def json_format(scan_output, directory):
     now = datetime.now()
     date_time = now.strftime("%d-%m-%Y_time_%H-%M")
     ip = scan_output.get("ip")
-    scan_output.pop("scanned ports")  # Comment if you want to list all the scanned ports
+    scan_output.pop("scanned ports")  # Comment out the code if you want to list all the scanned ports
 
     json_file = f'IP_{ip}_DATE_{date_time}.json'
     json_file = os.path.join(directory, json_file)
@@ -50,22 +50,20 @@ def xml_format(scan_output, directory):
 
     ports = ET.SubElement(root, 'ports')
 
-    # Uncomment if you want to list all the scanned ports.
+    # Uncomment below code block if you want to list all the scanned ports.
     # for port in scan_output.get("scanned ports"):
     #     scannend_ports = ET.SubElement(ports, 'scannedports')
     #     scannend_ports.text = str(port)
 
-    port_counter = 0
-    open_ports = ET.SubElement(ports, 'openports')
-    for i in scan_output['open ports']['number']:
-        open_ports.text = str(i)
-        port_counter += 1
+    open_ports = scan_output['open ports']['number']
+    banners = scan_output['open ports']['banner']
+    ports_banners = zip(open_ports, banners)
 
-    banner_counter = 0
-    banner = ET.SubElement(open_ports, 'banner')
-    for i in scan_output['open ports']['banner']:
-        banner.text = str(i)
-        banner_counter += 1
+    for port, banner in ports_banners:
+        open_port = ET.SubElement(ports, 'open')
+        open_port.text = str(port)
+        open_banner = ET.SubElement(open_port, 'banner')
+        open_banner.text = str(banner)
 
     data_to_xml = ET.tostring(root, encoding='unicode', method='xml')
 

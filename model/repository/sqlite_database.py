@@ -4,21 +4,22 @@ import socket
 from datetime import datetime
 from sqlite3 import DatabaseError
 
+directory = "model\\repository\\"
+parent_directory = os.getcwd()
+path = os.path.join(parent_directory, directory)
+# async with sqlite3.connect(rf'{path}scan_results.db') as connection:
+connection = sqlite3.connect(rf'{path}scan_results.db')  # Opens Connection to SQLite database
+cursor = connection.cursor()
 
-def save_scan_info_to_database(scan_output):
+
+async def save_scan_info_to_database(scan_output):
     """Database connection setup"""
 
-    directory = "model\\repository\\"
-    parent_directory = os.getcwd()
-    path = os.path.join(parent_directory, directory)
-    connection = sqlite3.connect(rf'{path}scan_results.db')  # Opens Connection to SQLite database
-    cursor = connection.cursor()
-
-    create_db(cursor)  # Creates database table
-    data_entry(scan_output, connection, cursor)  # Parse the scan output into the database table
+    create_db()  # Creates database table
+    data_entry(scan_output)  # Parse the scan output into the database table
 
 
-def create_db(cursor):
+def create_db():
     """Creates a table within the database file if it does not exists"""
 
     try:
@@ -30,7 +31,7 @@ def create_db(cursor):
         print(DatabaseError)
 
 
-def data_entry(scan_output, connection, cursor):
+def data_entry(scan_output):
     """Inserts data into table and close the connection"""
 
     now = datetime.now()
@@ -66,6 +67,25 @@ def data_entry(scan_output, connection, cursor):
                    " VALUES (?,?,?,?,?,?,?)", params)
 
     connection.commit()
+
+    cursor.close()
+    connection.close()
+
+
+def query_db(ip):
+    """Query the database and return all the info on the specified ip address"""
+
+    try:
+        cursor.execute("SELECT * FROM scan_results WHERE ip=?", (ip,))
+        rows = cursor.fetchall()
+        if len(rows) == 0:
+            print(f"There is no stored data on IP: {ip}")
+        else:
+            for row in rows:
+                print(row)
+
+    except DatabaseError:
+        print(DatabaseError)
 
     cursor.close()
     connection.close()

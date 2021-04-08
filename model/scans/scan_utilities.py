@@ -1,6 +1,10 @@
+import asyncio
 from datetime import datetime
+import colorama
 from colorama import Fore
 import pyttsx3
+
+colorama.init()
 
 
 def start_scan_info(ip, scan_type):
@@ -28,7 +32,7 @@ def finish_scan_info(port_counter, tick, scan_data_object):
     scan_time = tock - tick
 
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
-    print(f"total of {port_counter} port(s) open out of the {len(ports)} port(s) scanned")
+    print(f"total of {port_counter} port(s) are open/filtered out of the {len(ports)} port(s) scanned")
     print(f"Scan completed in: {scan_time}")
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
 
@@ -53,13 +57,19 @@ def alert_scan_finish_with_sound():
 async def play_knocking_sound():
     """"Turn on a knocking sound in order to enhance the port scanning experience"""
 
+    await asyncio.sleep(0)
+
     import playsound
     directory = "view/static/sound"
     playsound.playsound(f"{directory}/knock.mp3", True)
+    await asyncio.sleep(1)
 
 
 async def play_joke():
     """"Play a knocking joke, I bet people will love this!"""
+
+    await asyncio.sleep(0)
+
     engine = pyttsx3.init()
     engine.setProperty('rate', 120)  # voice speed
     engine.say("Knock Knock")
@@ -68,3 +78,7 @@ async def play_joke():
     engine.say("UDP who?")
     engine.runAndWait()
     engine.stop()
+
+# asyncio.gather(play_knocking_sound())
+# asyncio.gather(play_joke())
+# asyncio.get_event_loop().is_running()

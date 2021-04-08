@@ -12,11 +12,13 @@ from model.scans.tcp.tcp import tcp_setup
 from model.repository.sqlite_database import save_scan_info_to_database
 
 queue = Queue()  #
-print_lock = threading.Lock()  #
+print_lock = threading.RLock()  #
 
 
 def connect_scan(scan_data_object):
-    """connect scan - creates a 3-way handshake(SYN, SYN ACK, ACK) connection with the target"""
+    """connect scan - creates a 3-way handshake(SYN, SYN ACK, ACK) connection with the target
+    https://nmap.org/book/scan-methods-connect-scan.html"""
+
     ip = scan_data_object.target
     ports = scan_data_object.ports
     timeout = scan_data_object.timeout
@@ -27,12 +29,13 @@ def connect_scan(scan_data_object):
     open_ports = []
     banner_info = []
 
-    tick = start_scan_info(ip, "connect scan")
+    tick = start_scan_info(ip, "TCP Connect scan")
 
     try:
         port_counter = 0
         for port in ports:
             try:
+                print(port)
                 sock = tcp_setup(timeout)  # Setup TCP socket
                 result = sock.connect_ex((ip, port))
                 if result == 0:  # The error indicator is 0 if the operation succeeded
@@ -46,14 +49,14 @@ def connect_scan(scan_data_object):
                         port_counter += 1
 
             except KeyboardInterrupt:
-                print("[*] User canceled scan")
+                print("[*] User canceled scan\nThank you for knocking, bye!")
                 sys.exit()
 
         if port_counter == 0:
             print(f"No open ports have been found")
 
     except KeyboardInterrupt:
-        print("[*] User canceled scan")
+        print("[*] User canceled scan\nThank you for knocking, bye!")
         sys.exit()
     except socket.gaierror:
         print('[!] Hostname could not be resolved. Exiting')

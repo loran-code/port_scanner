@@ -2,8 +2,10 @@
 
 ### todo's
 #### Must
+- xmas to database
+  - filtered
+  - open
 - doorlopend rapporteert -> [on keypress](https://stackoverflow.com/questions/24072790/detect-key-press-in-python) 
-- SQLite
 - unit testen
 
 #### Nice
