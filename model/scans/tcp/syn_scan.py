@@ -83,7 +83,7 @@ def syn_scan(scan_data_object):
     scan_output = {
         'date time': str(now.strftime("%d-%m-%Y %H:%M")),
         'ip': ip,
-        'scan type': "connect scan",
+        'scan type': "tcp syn scan",
         'open ports': [{
             'port': open_ports,
         },

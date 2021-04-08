@@ -2,17 +2,18 @@ import os
 import socket
 import sys
 import wget
+from colorama import Fore
 
 
 def active_banner_grab(sock):
     try:
         banner = sock.recv(1024).decode("utf-8")
-        print(f"    {banner}\n")
+        print(f"    {banner}")
         return banner
     except socket.gaierror:
-        print("    No banner - Hostname could not be resolved")
+        print(f"    {Fore.RED}No banner{Fore.RESET} - Hostname could not be resolved")
     except socket.error:
-        print("    No banner - Could not connect")
+        print(f"    {Fore.RED}No banner{Fore.RESET} - Could not connect")
 
 
 def passive_banner_grab(target, port):

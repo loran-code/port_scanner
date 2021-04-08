@@ -19,6 +19,7 @@ def json_format(scan_output, directory):
     now = datetime.now()
     date_time = now.strftime("%d-%m-%Y_time_%H-%M")
     ip = scan_output.get("ip")
+    scan_output.pop("scanned ports")  # Comment if you want to list all the scanned ports
 
     json_file = f'IP_{ip}_DATE_{date_time}.json'
     json_file = os.path.join(directory, json_file)
@@ -49,23 +50,27 @@ def xml_format(scan_output, directory):
 
     ports = ET.SubElement(root, 'ports')
 
-    for port in scan_output.get("scanned ports"):
-        scannend_ports = ET.SubElement(ports, 'scannedports')
-        scannend_ports.text = str(port)
+    # Uncomment if you want to list all the scanned ports.
+    # for port in scan_output.get("scanned ports"):
+    #     scannend_ports = ET.SubElement(ports, 'scannedports')
+    #     scannend_ports.text = str(port)
 
+    port_counter = 0
     open_ports = ET.SubElement(ports, 'openports')
-    for port in scan_output['open ports'][0]['port']:
-        open_ports.text = str(port)
+    for i in scan_output['open ports']['number']:
+        open_ports.text = str(i)
+        port_counter += 1
 
+    banner_counter = 0
     banner = ET.SubElement(open_ports, 'banner')
-    for i in scan_output['open ports'][0]['banner']:
+    for i in scan_output['open ports']['banner']:
         banner.text = str(i)
+        banner_counter += 1
 
-    # todo bytes vs string & spread output instead of 1 line
-    data_to_xml = ET.tostringlist(root)
+    data_to_xml = ET.tostring(root, encoding='unicode', method='xml')
 
     with open(xml_file, 'w') as file:
-        file.write(str(data_to_xml))
+        file.write(data_to_xml)
 
 
 def check_platform():

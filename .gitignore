@@ -15,4 +15,7 @@ ENV/
 env.bak/
 venv.bak/
 
+# Project
+model/repository/scan_results.db
+scan_output/*
 uitleg.docx

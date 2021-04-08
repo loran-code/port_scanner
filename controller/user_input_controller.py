@@ -1,5 +1,6 @@
 import argparse
 
+from colorama import Fore
 
 from model.scans.scan_setup import start_scan
 from model.user_input_model import UserInputModel
@@ -12,6 +13,7 @@ def parse_user_arguments():
     needed to check for valid input by parsing
     the variables as arguments to other methods
     """
+
     parser = argparse.ArgumentParser()
     # parser = argparse.ArgumentParser(description=banner())
     parser.add_argument("-t", "-target", metavar="", type=str, required=True,
@@ -19,14 +21,15 @@ def parse_user_arguments():
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
     parser.add_argument("-pl", "-portlist", metavar="", nargs='+', type=int, help="Port list e.g. 21,22,80")
     parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 20-30")
-    parser.add_argument("-to", "-timeout", metavar="", type=int, default=5, help="Timeout value (default 3)")
+    parser.add_argument("-to", "-timeout", metavar="", type=int, default=5, help="Timeout value (default 5)")
     parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
     parser.add_argument("-o", "-output", action='store_true', help="Stores scan result in json and xml format")
     parser.add_argument("-db", "-repository", action='store_true', help="Stores the scan result into a SQLite repository")
     parser.add_argument("-s", "-sound", action='store_true',
                         help="Activates sound to inform when a scan has been finished")
-    parser.add_argument("-music", action='store_true', help="Play some knocking music while you wait for the scan to "
+    parser.add_argument("-knock", action='store_true', help="Play some knocking music while you wait for the scan to "
                                                             "finish")
+    parser.add_argument("-joke", action='store_true', help="Make a joke")
     parser.add_argument("-tc", "-tcpconnect", action='store_true', help="tcp connect scan (default if scan type is "
                                                                         "omitted)")
     parser.add_argument("-ts", "-tcpsync", action='store_true', help="tcp sync scan")
@@ -45,11 +48,6 @@ def parse_user_arguments():
     # Pass the object to the start scan method
     start_scan(scan_data_object)
     return None
-
-    # ip = "scanme.nmap.org"
-    # ip = "localhost"
-    # ports = list(range(1, 1024))
-    # ports = list(range(21, 23))
 
 
 def parse_user_ip_options(args):
@@ -74,18 +72,18 @@ def parse_user_port_options(args):
         port_range = args.get("pr")
 
         if len(port_range) < 2 or len(port_range) > 2:
-            print("Specify a range with 2 integers e.g. -pr / -portrange 20 100")
+            print(f"{Fore.RED}--{Fore.RESET}Specify a range with 2 integers e.g. -pr / -portrange 20 100")
             exit(1)
 
         if port_range[0] > port_range[1]:
-            print("Specify the smallest number before specifying the large number. e.g. -pr / -portrange 20 100")
+            print(f"{Fore.RED}--{Fore.RESET}Specify the smallest number before specifying the large number. e.g. -pr / -portrange 20 100")
             exit(1)
         else:
             port_range = range(port_range[0], port_range[1])
             return UserInputModel.check_port_range(port_range)
 
     else:
-        print("No port range has been specified defaulting to portrange 1-1023")
+        print(f"{Fore.GREEN}--{Fore.RESET}No port range has been specified defaulting to portrange 1-1023")
         return UserInputModel.check_port_range(range(1, 1024))
 
 
@@ -103,7 +101,12 @@ def parse_remaining_options(args):
     if args.get("s"):
         remaining_options["s"] = args.get("s")
 
-    print(remaining_options)  # todo remove
+    if args.get("knock"):
+        remaining_options["knock"] = args.get("knock")
+
+    if args.get("joke"):
+        remaining_options["joke"] = args.get("joke")
+
     return remaining_options
 
 
@@ -119,5 +122,5 @@ def parse_user_scan_options(args):
     elif args.get("us"):
         return "us"
     else:
-        print("No scan type has been specified defaulting to connect scan")
+        print(f"{Fore.GREEN}--{Fore.RESET}No scan type has been specified defaulting to connect scan")
         return "tc"
