@@ -1,5 +1,8 @@
 # port_scanner
 
+-dbq flag does not work when it contains a target that is not in the database when run in pycharm it does work from the terminal
+
+
 ### todo's
 #### Must
 - xmas to database

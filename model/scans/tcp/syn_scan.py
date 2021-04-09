@@ -1,5 +1,4 @@
 from colorama import Fore
-from logging import getLogger, ERROR
 from scapy.all import *
 from scapy.layers.inet import IP, TCP
 from threading import RLock
@@ -10,7 +9,6 @@ from model.scans.scan_utilities import finish_scan_info, start_scan_info
 from model.constants import SYNACK
 from model.repository.sqlite_database import save_scan_info_to_database
 
-getLogger("scapy.runtime").setLevel(ERROR)
 que = Queue()
 print_lock = RLock()
 
@@ -61,21 +59,21 @@ def syn_scan(scan_data_object):
                 src_port = RandShort()
                 rst_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
                 send(rst_pkt)
-                print("[*] User canceled scan\nThank you for knocking, bye!")
-                sys.exit()
+                print(f"{Fore.GREEN}[*]{Fore.RESET} User canceled scan - Thank you for knocking, bye!")
+                exit()
 
         if port_counter == 0:
             print(f"No open ports have been found")
 
     except KeyboardInterrupt:
-        print("[*] User canceled scan\nThank you for knocking, bye!")
-        sys.exit()
+        print(f"{Fore.GREEN}[*]{Fore.RESET} User canceled scan - Thank you for knocking, bye!")
+        exit()
     except socket.gaierror:
-        print('[!] Hostname could not be resolved. Exiting')
-        sys.exit()
+        print(f"{Fore.RED}[!]{Fore.RESET} Hostname could not be resolved. Exiting")
+        exit()
     except socket.error:
-        print("[!] Could not connect to server")
-        sys.exit()
+        print(f"{Fore.RED}[!]{Fore.RESET} Could not connect to server")
+        exit()
 
     now = datetime.now()
     scan_output = {

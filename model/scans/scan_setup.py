@@ -1,5 +1,5 @@
-from scapy.all import *
-from scapy.layers.inet import IP, ICMP
+from colorama import Fore
+from pythonping import ping
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 
@@ -10,17 +10,16 @@ from model.scans.tcp.xmas_scan import xmas_scan
 from model.scans.udp.udp import udp_setup
 
 
-def ping_host(ip):
-    conf.verb = 0  # Hide output
-    # todo ping target else stop scan
+def target_is_up(ip):
+
     try:
-        ping = sr1(IP(dst=ip) / ICMP())  # Ping target with ICMP packet
-        print("no luck")
+        return ping(ip, count=2, timeout=2).success()
+
     except ConnectionError as errorCode:  # If ping fails
         print(errorCode)
-        print("\n[!] Could not ping target")
-        print("[!] Exiting...")
-        sys.exit(1)
+        print(f"{Fore.RED}[!]{Fore.RESET} Could not ping target")
+        print(f"{Fore.RED}[!]{Fore.RESET} Exiting")
+        exit()
 
 
 def start_scan(scan_data_object):

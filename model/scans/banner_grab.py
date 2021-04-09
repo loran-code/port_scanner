@@ -1,7 +1,6 @@
 import os
-import socket
 import sys
-import wget
+import socket
 from colorama import Fore
 
 

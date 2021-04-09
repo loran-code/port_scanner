@@ -1,5 +1,4 @@
 import argparse
-
 from colorama import Fore
 
 from model.repository.sqlite_database import query_db

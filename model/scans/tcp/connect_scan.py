@@ -1,5 +1,4 @@
 import socket
-import sys
 import threading
 from datetime import datetime
 from queue import Queue
@@ -35,12 +34,11 @@ def connect_scan(scan_data_object):
         port_counter = 0
         for port in ports:
             try:
-                print(port)
                 sock = tcp_setup(timeout)  # Setup TCP socket
                 result = sock.connect_ex((ip, port))
                 if result == 0:  # The error indicator is 0 if the operation succeeded
                     with print_lock:
-                        print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
+                        print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET}")
                         banner = active_banner_grab(sock)
                         sock.close()
 
@@ -49,21 +47,21 @@ def connect_scan(scan_data_object):
                         port_counter += 1
 
             except KeyboardInterrupt:
-                print("[*] User canceled scan\nThank you for knocking, bye!")
-                sys.exit()
+                print(f"{Fore.GREEN}[*]{Fore.RESET} User canceled scan - Thank you for knocking, bye!")
+                exit()
 
         if port_counter == 0:
             print(f"No open ports have been found")
 
     except KeyboardInterrupt:
-        print("[*] User canceled scan\nThank you for knocking, bye!")
-        sys.exit()
+        print(f"{Fore.GREEN}[*]{Fore.RESET} User canceled scan - Thank you for knocking, bye!")
+        exit()
     except socket.gaierror:
-        print('[!] Hostname could not be resolved. Exiting')
-        sys.exit()
+        print(f"{Fore.RED}[!]{Fore.RESET} Hostname could not be resolved. Exiting")
+        exit()
     except socket.error:
-        print("[!] Could not connect to server")
-        sys.exit()
+        print(f"{Fore.RED}[!]{Fore.RESET} Could not connect to server")
+        exit()
     finally:
         sock.close()
 
