@@ -1,9 +1,9 @@
 import socket
 
 
-def udp_setup(timeout):
+def udp_setup(scan_data_object):
     """setup UDP connection"""
-
+    timeout = scan_data_object.timeout
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(timeout)
 

@@ -32,7 +32,8 @@ def finish_scan_info(port_counter, tick, scan_data_object):
     scan_time = tock - tick
 
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
-    print(f"total of {port_counter} port(s) are open/filtered out of the {len(ports)} port(s) scanned")
+    print(f"total of {port_counter} port(s) are {Fore.GREEN}open{Fore.RESET} / {Fore.YELLOW}filtered{Fore.RESET}"
+          f" out of the {len(ports)} port(s) scanned")
     print(f"Scan completed in: {scan_time}")
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
 

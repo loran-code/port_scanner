@@ -7,7 +7,7 @@ from model.scans.scan_utilities import play_knocking_sound, play_joke
 from model.scans.tcp.connect_scan import connect_scan
 from model.scans.tcp.syn_scan import syn_scan
 from model.scans.tcp.xmas_scan import xmas_scan
-from model.scans.udp.udp import udp_setup
+from model.scans.udp.udp_scan import udp_scan
 
 
 def target_is_up(ip):
@@ -51,4 +51,4 @@ def start_scan(scan_data_object):
         elif scan_type == "tx":
             xmas_scan(scan_data_object)
         elif scan_type == "us":
-            udp_setup(scan_data_object)
+            udp_scan(scan_data_object)

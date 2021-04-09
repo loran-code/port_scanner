@@ -19,6 +19,8 @@ def xmas_scan(scan_data_object):
     if the target gives no response the port is open.
     https://nmap.org/book/scan-methods-null-fin-xmas-scan.html"""
 
+    conf.verb = 0  # Suppress scapy output in terminal
+
     # Get required variables from object
     ip = scan_data_object.target
     ports = scan_data_object.ports
@@ -39,16 +41,15 @@ def xmas_scan(scan_data_object):
             try:
                 xmas_packet = IP(dst=ip) / TCP(sport=src_port, dport=port, flags='FPU')  # Construct xmas packet
                 response = sr1(xmas_packet, timeout=timeout)  # Send xmas packet
-                if response is None:
+                if str(type(response)) == "<class 'NoneType'>":
                     with print_lock:
-                        print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} / {Fore.YELLOW}Filtered{Fore.RESET}")
+                        print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} | {Fore.YELLOW}Filtered{Fore.RESET}")
                     open_ports.append(str(port) + " open/filtered")
                     port_counter += 1
 
-                # if TCP in response:
                 elif response.haslayer(TCP):
                     if response.getlayer(TCP).flags == RSTACK:
-                        pass
+                        pass  # port is closed
 
                     elif response.haslayer(ICMP):
                         if int(response.getlayer(ICMP)) == ICMP_UNREACHABLE_ERROR and int(response.getlayer(ICMP).code) \
@@ -76,9 +77,6 @@ def xmas_scan(scan_data_object):
         exit()
 
     now = datetime.now()
-    # print(ports)
-    # print(filtered_ports)
-    # print(open_ports)
     scan_output = {
         'date time': str(now.strftime("%d-%m-%Y %H:%M")),
         'ip': ip,

@@ -18,6 +18,8 @@ def syn_scan(scan_data_object):
     Takes the origin port from the target reply header
     https://nmap.org/book/synscan.html"""
 
+    conf.verb = 0  # Suppress scapy output in terminal
+
     # Get required variables from object
     ip = scan_data_object.target
     ports = scan_data_object.ports
@@ -36,7 +38,7 @@ def syn_scan(scan_data_object):
             src_port = RandShort()  # Generate Port Number
             try:
                 # Send SYN and receive RST-ACK or SYN-ACK
-                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S"))
+                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S", timeout=timeout))
 
                 # Extract flags of received packet
                 pkt_flags = syn_ack_pkt.getlayer(TCP).flags
@@ -46,11 +48,9 @@ def syn_scan(scan_data_object):
 
                 if pkt_flags == SYNACK:  # Cross reference Flags
                     with print_lock:
-                        print(f"Port {port} -" + Fore.GREEN + " Open" + Fore.RESET)
+                        print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET}")
                         send(rst_pkt)  # Send RST packet
-
                         open_ports.append(port)  # add open port to list
-
                         port_counter += 1
                 else:
                     send(rst_pkt)

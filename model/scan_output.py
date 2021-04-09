@@ -55,8 +55,14 @@ def xml_format(scan_output, directory):
     #     scannend_ports = ET.SubElement(ports, 'scannedports')
     #     scannend_ports.text = str(port)
 
-    open_ports = scan_output['open ports']['number']
-    banners = scan_output['open ports']['banner']
+    # check_scan_output()
+
+    open_ports = scan_output['open ports']['port number']
+    # banners = scan_output['open ports']['banner']
+    banners = [None]
+    # if banners is None:
+    #     banners = [None]
+
     ports_banners = zip(open_ports, banners)
 
     for port, banner in ports_banners:
@@ -69,6 +75,10 @@ def xml_format(scan_output, directory):
 
     with open(xml_file, 'w') as file:
         file.write(data_to_xml)
+
+
+def check_scan_output():
+    pass
 
 
 def check_platform():

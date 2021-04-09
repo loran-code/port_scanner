@@ -16,26 +16,24 @@ def parse_user_arguments():
 
     parser = argparse.ArgumentParser()
     # parser = argparse.ArgumentParser(description=banner())
-    parser.add_argument("-t", "-target", metavar="", type=str, required=True,
-                        help="IP4V address that needs to be scanned")
+    parser.add_argument("-t", "-target", metavar="", type=str, required=True, help="IP4V address that needs to be "
+                                                                                   "scanned")
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
-    parser.add_argument("-pl", "-portlist", metavar="", nargs='+', type=int, help="Port list e.g. 21,22,80")
-    parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 20-30")
+    parser.add_argument("-pl", "-portlist", metavar="", nargs='+', type=int, help="Port list e.g. 22 53 80 443")
+    parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 1 1023 (default)")
     parser.add_argument("-to", "-timeout", metavar="", type=int, default=5, help="Timeout value (default 5)")
     parser.add_argument("-th", "-threading", metavar="", type=int, default=10, help="Amount of threads (default 10)")
     parser.add_argument("-o", "-output", action='store_true', help="Stores scan result in json and xml format")
     parser.add_argument("-db", "-database", action='store_true', help="Stores the scan result into a SQLite repository")
     parser.add_argument("-dbq", "-query", action='store_true', help="Shows stored scans on given ip")
-    parser.add_argument("-s", "-sound", action='store_true',
-                        help="Activates sound to inform when a scan has been finished")
-    parser.add_argument("-knock", action='store_true', help="Play some knocking music while you wait for the scan to "
-                                                            "finish")
-    parser.add_argument("-joke", action='store_true', help="Make a joke")
-    parser.add_argument("-tc", "-tcpconnect", action='store_true', help="tcp connect scan (default if scan type is "
-                                                                        "omitted)")
-    parser.add_argument("-ts", "-tcpsync", action='store_true', help="tcp sync scan")
-    parser.add_argument("-tx", "-tcpxmas", action='store_true', help="tcp xmas scan")
-    parser.add_argument("-us", "-udpscan", action='store_true', help="udp scan")
+    parser.add_argument("-s", "-sound", action='store_true', help="Activates sound to inform when a scan has been "
+                                                                  "finished")
+    parser.add_argument("-tc", "-tcpconnect", action='store_true', help="TCP Connect scan (default)")
+    parser.add_argument("-ts", "-tcpsync", action='store_true', help="TCP SYN scan")
+    parser.add_argument("-tx", "-tcpxmas", action='store_true', help="TCP XMAS scan")
+    parser.add_argument("-us", "-udpscan", action='store_true', help="UDP scan")
+    parser.add_argument("-knock", action='store_true', help="The real port knocking experience (requires audio)")
+    parser.add_argument("-joke", action='store_true', help="Tell a joke (requires audio)")
     args = vars(parser.parse_args())  # Create dictionary from the given command line arguments
 
     ip = parse_user_ip_options(args)  # Parse the given ip
