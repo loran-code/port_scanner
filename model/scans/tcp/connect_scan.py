@@ -1,8 +1,10 @@
+import asyncio
 import socket
 import threading
 from datetime import datetime
 from queue import Queue
 from colorama import Fore
+import concurrent.futures
 
 from model.scan_output import save_scan_info_to_file
 from model.scans.banner_grab import active_banner_grab
@@ -20,7 +22,7 @@ def connect_scan(scan_data_object):
 
     ip = scan_data_object.target
     ports = scan_data_object.ports
-    timeout = scan_data_object.timeout
+    timeout_time = scan_data_object.timeout
     threads = scan_data_object.threads
     write_output_to_file = scan_data_object.output_to_file
     save_output_in_database = scan_data_object.save_to_database
@@ -34,7 +36,7 @@ def connect_scan(scan_data_object):
     try:
         for port in ports:
             try:
-                sock = tcp_setup(timeout)  # Setup TCP socket
+                sock = tcp_setup(timeout_time)  # Setup TCP socket
                 result = sock.connect_ex((ip, port))
                 if result == 0:  # The error indicator is 0 if the operation succeeded
                     with print_lock:
@@ -85,6 +87,7 @@ def connect_scan(scan_data_object):
             save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)
+
 
 # t1 = threading.Thread(target=connect_scan)
 # t2 = threading.Thread(target=connect_scan)

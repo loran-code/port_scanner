@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # v1.0
 # https://github.com/loran-code/port_scanner
+
 from colorama import Fore
 
 from controller.user_input_controller import parse_user_arguments

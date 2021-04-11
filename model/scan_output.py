@@ -57,20 +57,40 @@ def xml_format(scan_output, directory):
 
     open_ports = scan_output['open ports']['port number']
 
-    try:  # Checks if tcp connect (banner grab) scan has been used
+    banners = None
+    try:  # Checks if tcp connect (banner grab) has been used
 
-        if scan_output['open ports']['banner'] is not None:
-            banners = scan_output['open ports']['banner']
+        # if scan_output['open ports']['banner'] is not None:
+        banners = scan_output['open ports']['banner']
 
-            ports_banners = zip(open_ports, banners)
+        ports_banners = zip(open_ports, banners)
 
-            for port, banner in ports_banners:
-                open_port = ET.SubElement(ports, 'open')
-                open_port.text = str(port)
-                open_banner = ET.SubElement(open_port, 'banner')
-                open_banner.text = str(banner)
+        for port, banner in ports_banners:
+            open_port = ET.SubElement(ports, 'open')
+            open_port.text = str(port)
+            open_banner = ET.SubElement(open_port, 'banner')
+            open_banner.text = str(banner)
 
     except KeyError:  # tcp connect has not been used
+        pass
+
+    if banners is None:
+        for port in open_ports:
+            open_port = ET.SubElement(ports, 'open')
+            open_port.text = str(port)
+
+    try:  # Checks if scan has found open | filtered ports
+        open_or_filtered_ports = scan_output['open or filtered ports']['port number']
+
+        for port in open_or_filtered_ports:
+            open_or_filtered_port = ET.SubElement(ports, 'open_or_filtered')
+            open_or_filtered_port.text = str(port)
+
+        # for port in open_ports:
+        #     open_port = ET.SubElement(ports, 'open')
+        #     open_port.text = str(port)
+
+    except KeyError:  # Filtered ports have not been found
         pass
 
     try:  # Checks if scan has found filtered ports
@@ -80,9 +100,9 @@ def xml_format(scan_output, directory):
             filtered_port = ET.SubElement(ports, 'filtered')
             filtered_port.text = str(port)
 
-        for port in open_ports:
-            open_port = ET.SubElement(ports, 'open')
-            open_port.text = str(port)
+        # for port in open_ports:
+        #     open_port = ET.SubElement(ports, 'open')
+        #     open_port.text = str(port)
 
     except KeyError:  # Filtered ports have not been found
         pass

@@ -1,12 +1,12 @@
 from colorama import Fore
 from scapy.all import *
-from scapy.layers.inet import IP, TCP
+from scapy.layers.inet import IP, TCP, ICMP
 from threading import RLock
 from queue import Queue
 
 from model.scan_output import save_scan_info_to_file
 from model.scans.scan_utilities import finish_scan_info, start_scan_info
-from model.constants import SYNACK
+from model.constants import SYNACK, RSTACK, ICMP_UNREACHABLE_ERROR, ICMP_UNREACHABLE_ERROR_NUMBERS
 from model.repository.sqlite_database import save_scan_info_to_database
 
 que = Queue()
@@ -23,12 +23,13 @@ def syn_scan(scan_data_object):
     # Get required variables from object
     ip = scan_data_object.target
     ports = scan_data_object.ports
-    timeout = scan_data_object.timeout
+    timeout_time = scan_data_object.timeout
     threads = scan_data_object.threads
     write_output_to_file = scan_data_object.output_to_file
     save_output_in_database = scan_data_object.save_to_database
 
     open_ports = []
+    filtered_ports = []
     port_counter = 0
 
     tick = start_scan_info(ip, "TCP SYN scan")
@@ -36,30 +37,46 @@ def syn_scan(scan_data_object):
     try:
         for port in ports:
             src_port = RandShort()  # Generate Port Number
-            try:
-                # Send SYN and receive RST-ACK or SYN-ACK
-                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S"), timeout=timeout)
+
+            try:  # Send SYN and receive RST-ACK or SYN-ACK
+                # Construct SYN packet
+                syn_ack_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S")
 
                 # Extract flags of received packet
-                pkt_flags = syn_ack_pkt.getlayer(TCP).flags
+                response = sr1(syn_ack_pkt, timeout=timeout_time)
 
                 # Construct RST packet
-                rst_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
+                reset_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
 
-                if pkt_flags == SYNACK:  # Cross reference Flags
+                if str(type(response)) == "<class 'NoneType'>":
                     with print_lock:
-                        print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET}")
-                    send(rst_pkt)  # Send RST packet
-                    open_ports.append(port)  # add open port to list
+                        print(f"Port {port} - {Fore.YELLOW}Filtered{Fore.RESET}")
+                    filtered_ports.append(port)  # add filtered port to list
                     port_counter += 1
 
-                else:
-                    send(rst_pkt)
+                elif response.haslayer(TCP):
+                    if response.getlayer(TCP).flags == SYNACK:
+                        send(reset_pkt)  # Send RST packet
+                        with print_lock:
+                            print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET}")
+                        open_ports.append(port)  # add open port to list
+                        port_counter += 1
+
+                    elif response.getlayer(TCP).flags == RSTACK:  # port Closed
+                        send(reset_pkt)
+
+                elif response.haslayer(ICMP):
+                    if int(response.getlayer(ICMP)) == ICMP_UNREACHABLE_ERROR and int(response.getlayer(ICMP).code) \
+                            in ICMP_UNREACHABLE_ERROR_NUMBERS:
+                        with print_lock:
+                            print(f"Port {port} - {Fore.YELLOW}Filtered{Fore.RESET}")
+                        filtered_ports.append(port)
+                        port_counter += 1
 
             except KeyboardInterrupt:
                 src_port = RandShort()
-                rst_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
-                send(rst_pkt)
+                reset_pkt = IP(dst=ip) / TCP(sport=src_port, dport=port, flags="R")
+                send(reset_pkt)
                 print(f"{Fore.GREEN}[*]{Fore.RESET} User canceled scan - Thank you for knocking, bye!")
                 exit()
 

@@ -24,8 +24,9 @@ def create_db():
     try:
         cursor.execute("CREATE TABLE IF NOT EXISTS scan_results (id INTEGER PRIMARY KEY,"
                        "date_time timestamp,"
-                       "ip TEXT, scan_type TEXT, scanned_ports TEXT, filtered_ports TEXT,"
-                       "open_ports TEXT, banner TEXT, scanned_by_computer TEXT)")
+                       "ip TEXT, scan_type TEXT, scanned_ports TEXT,"
+                       "open_ports TEXT, open_or_filtered_ports TEXT,"
+                       " filtered_ports TEXT, banner TEXT, scanned_by_computer TEXT)")
     except DatabaseError:
         print(DatabaseError)
 
@@ -56,6 +57,15 @@ def data_entry(scan_output):
     except KeyError:  # tcp connect has not been used
         pass
 
+    open_or_filtered_port_list = ""
+    try:  # Checks if scan has found open or filtered ports
+        if scan_output['open or filtered ports']['port number'] is not None:
+            open_or_filtered_ports = scan_output['open or filtered ports']['port number']
+            open_or_filtered_port_list = parse_scanned_open_or_filtered_ports(open_or_filtered_ports)
+
+    except KeyError:  # Filtered ports have not been found
+        pass
+
     filtered_port_list = ""
     try:  # Checks if scan has found filtered ports
 
@@ -66,12 +76,15 @@ def data_entry(scan_output):
     except KeyError:  # Filtered ports have not been found
         pass
 
+    # all_ports = ""  # Uncomment code if you do not want to insert all the scannend ports into the database.
+
     # Insert values into the db table
-    params = (date_time, ip, scan_type, all_ports, open_ports, filtered_port_list, open_banners, computer_name)
+    params = (date_time, ip, scan_type, all_ports, open_ports, open_or_filtered_port_list,
+              filtered_port_list, open_banners, computer_name)
 
     cursor.execute("INSERT INTO scan_results (date_time, ip, scan_type, scanned_ports,"
-                   " open_ports, filtered_ports, banner, scanned_by_computer) "
-                   " VALUES (?,?,?,?,?,?,?,?)", params)
+                   " open_ports, open_or_filtered_ports, filtered_ports, banner, scanned_by_computer) "
+                   " VALUES (?,?,?,?,?,?,?,?,?)", params)
 
     connection.commit()  # Commit the selected data into the database
 
@@ -132,6 +145,18 @@ def parse_scanned_banners(banners):
     return open_banners
 
 
+def parse_scanned_open_or_filtered_ports(open_or_filtered_ports):
+    open_or_filtered_port_list = ""
+
+    for port in open_or_filtered_ports:
+        port = str(port)
+        open_or_filtered_port_list += f"{port}, "
+
+    open_or_filtered_port_list = open_or_filtered_port_list[:-2]
+
+    return open_or_filtered_port_list
+
+
 def parse_scanned_filtered_ports(filtered_ports):
     filtered_port_list = ""
 
@@ -140,4 +165,5 @@ def parse_scanned_filtered_ports(filtered_ports):
         filtered_port_list += f"{port}, "
 
     filtered_port_list = filtered_port_list[:-2]
+
     return filtered_port_list

@@ -1,4 +1,3 @@
-import asyncio
 from datetime import datetime
 import colorama
 from colorama import Fore
@@ -11,11 +10,11 @@ def start_scan_info(ip, scan_type):
     """Print starting header information about the scan that is being run"""
 
     tick = datetime.now()
-    print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
+    print(70 * f"{Fore.YELLOW}-{Fore.RESET}")
     print(f"Scan type: {scan_type}")
     print(f"Scanning target: {ip}")
     print(f"Scan started at: {tick}")
-    print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
+    print(70 * f"{Fore.YELLOW}-{Fore.RESET}")
 
     return tick
 
@@ -31,11 +30,11 @@ def finish_scan_info(port_counter, tick, scan_data_object):
     tock = datetime.now()
     scan_time = tock - tick
 
-    print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
+    print(70 * f"{Fore.YELLOW}-{Fore.RESET}")
     print(f"total of {port_counter} port(s) are {Fore.GREEN}open{Fore.RESET} / {Fore.YELLOW}filtered{Fore.RESET}"
           f" out of the {len(ports)} port(s) scanned")
     print(f"Scan completed in: {scan_time}")
-    print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
+    print(70 * f"{Fore.YELLOW}-{Fore.RESET}")
 
     if port_counter > 0:
         if write_output_to_file:
@@ -60,18 +59,13 @@ def alert_scan_finish_with_sound():
 def play_knocking_sound():
     """"Turn on knocking sound in order to enhance the port scanning experience"""
 
-    # await asyncio.sleep(0)
-
     import playsound
     directory = "view/static/sound"
     playsound.playsound(f"{directory}/knock.mp3", True)
-    # await asyncio.sleep(1)
 
 
 def play_joke():
     """"Make a networking joke, I bet people will love this!"""
-
-    # await asyncio.sleep(0)
 
     engine = pyttsx3.init()
     engine.setProperty('rate', 120)  # voice speed
@@ -82,6 +76,4 @@ def play_joke():
     engine.runAndWait()
     engine.stop()
 
-# asyncio.gather(play_knocking_sound())
-# asyncio.gather(play_joke())
-# asyncio.get_event_loop().is_running()
+

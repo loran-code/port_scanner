@@ -24,12 +24,13 @@ def xmas_scan(scan_data_object):
     # Get required variables from object
     ip = scan_data_object.target
     ports = scan_data_object.ports
-    timeout = scan_data_object.timeout
+    timeout_time = scan_data_object.timeout
     threads = scan_data_object.threads
     write_output_to_file = scan_data_object.output_to_file
     save_output_in_database = scan_data_object.save_to_database
 
     open_ports = []
+    open_or_filtered_ports = []
     filtered_ports = []
     port_counter = 0
 
@@ -38,18 +39,23 @@ def xmas_scan(scan_data_object):
     try:
         for port in ports:
             src_port = RandShort()  # Generate Port Number
-            try:
-                xmas_packet = IP(dst=ip) / TCP(sport=src_port, dport=port, flags='FPU')  # Construct xmas packet
-                response = sr1(xmas_packet, timeout=timeout)  # Send xmas packet
+
+            try:  # Send FPU packet and receive RST-ACK
+                # Construct FPU (xmas scan) packet
+                xmas_packet = IP(dst=ip) / TCP(sport=src_port, dport=port, flags='FPU')
+
+                # Extract flags of received packet
+                response = sr1(xmas_packet, timeout=timeout_time)
+
                 if str(type(response)) == "<class 'NoneType'>":
                     with print_lock:
                         print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} | {Fore.YELLOW}Filtered{Fore.RESET}")
-                    open_ports.append(port)
+                    open_or_filtered_ports.append(port)  # add open or filtered port to list
                     port_counter += 1
 
                 elif response.haslayer(TCP):
-                    if response.getlayer(TCP).flags == RSTACK:
-                        pass  # port is closed
+                    if response.getlayer(TCP).flags == RSTACK:  # port is closed
+                        pass
 
                     elif response.haslayer(ICMP):
                         if int(response.getlayer(ICMP)) == ICMP_UNREACHABLE_ERROR and int(response.getlayer(ICMP).code) \
@@ -84,6 +90,9 @@ def xmas_scan(scan_data_object):
         'scanned ports': ports,
         'open ports': {
             'port number': open_ports
+        },
+        'open or filtered ports': {
+            'port number': open_or_filtered_ports
         },
         'filtered ports': {
             'port number': filtered_ports

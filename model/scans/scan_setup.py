@@ -1,8 +1,9 @@
+import multiprocessing
+import concurrent.futures
 from colorama import Fore
 from pythonping import ping
-from concurrent.futures import ThreadPoolExecutor
-import asyncio
 
+from model.repository.sqlite_database import create_db
 from model.scans.scan_utilities import play_knocking_sound, play_joke
 from model.scans.tcp.connect_scan import connect_scan
 from model.scans.tcp.syn_scan import syn_scan
@@ -55,31 +56,29 @@ def valid_input():
 
 
 def start_scan(scan_data_object):
-    """Start user specified scan method"""
-    scan_type = scan_data_object.scan_type
+    """Start user specified scan method and database connection"""
+    database_connection = scan_data_object.save_to_database
     knock = scan_data_object.knock
     joke = scan_data_object.joke
+    scan_type = scan_data_object.scan_type
     threads = scan_data_object.threads
 
-    # asyncio.gather(play_knocking_sound())
-    # asyncio.gather(play_joke())
-    # asyncio.get_event_loop().is_running()
+    with concurrent.futures.ProcessPoolExecutor() as executor:
 
-    # todo multi threaded
-    if knock:
-        play_knocking_sound()
-
-    # todo multi threaded
-    if joke:
-        play_joke()
-
-    with ThreadPoolExecutor(max_workers=threads) as executor:
+        if database_connection:  # Start up database connection
+            f1 = executor.submit(create_db)
+        if knock:
+            f2 = executor.submit(play_knocking_sound)
+        if joke:
+            f3 = executor.submit(play_joke)
 
         if scan_type == "tc":
-            executor.submit(connect_scan(scan_data_object))
+            f4 = executor.submit(connect_scan(scan_data_object))
         elif scan_type == "ts":
-            syn_scan(scan_data_object)
+            f4 = executor.submit(syn_scan(scan_data_object))
         elif scan_type == "tx":
-            xmas_scan(scan_data_object)
+            f4 = executor.submit(xmas_scan(scan_data_object))
         elif scan_type == "us":
-            udp_scan(scan_data_object)
+            f4 = executor.submit(udp_scan(scan_data_object))
+
+

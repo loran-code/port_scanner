@@ -14,7 +14,9 @@ print_lock = RLock()
 
 
 def udp_scan(scan_data_object):
-    """udp scan -
+    """udp scan - send a crafted UDP packet in order to check if the target is up.
+    Depending on what kind of reply the target has given it can be determined weather a port
+    is open, filtered or closed.
     https://nmap.org/book/scan-methods-udp-scan.html"""
 
     conf.verb = 0  # Suppress scapy output in terminal
@@ -22,12 +24,13 @@ def udp_scan(scan_data_object):
     # Get required variables from object
     ip = scan_data_object.target
     ports = scan_data_object.ports
-    timeout = scan_data_object.timeout
+    timeout_time = scan_data_object.timeout
     threads = scan_data_object.threads
     write_output_to_file = scan_data_object.output_to_file
     save_output_in_database = scan_data_object.save_to_database
 
     open_ports = []
+    open_or_filtered_ports = []
     filtered_ports = []
     port_counter = 0
 
@@ -35,38 +38,34 @@ def udp_scan(scan_data_object):
 
     try:
         for port in ports:
-            try:
-                response = sr1(IP(dst=ip) / UDP(dport=port), timeout=timeout)  # Save the response of a UDP packet
-                # print(response)
-                # print(type(response))
-                # print(port_counter)
+            try:  # Send UDP packet and receive an UDP packet from the target
+                # Construct UDP packet
+                udp_packet = IP(dst=ip) / UDP(dport=port)
+
+                # Extract flags of received packet
+                response = sr1(udp_packet, timeout=timeout_time)
+
                 if str(type(response)) == "<class 'NoneType'>":
-                    retransmit = []
-                    for count in range(0, 3):
-                        retransmit.append(sr1(IP(dst=ip) / UDP(dport=port), timeout=timeout))
+                    with print_lock:
+                        print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} | {Fore.YELLOW}Filtered{Fore.RESET}")
+                    open_or_filtered_ports.append(port)  # add open or filtered port to list
+                    port_counter += 1
 
-                    for i in retransmit:
-                        if str(type(response)) != "<class 'NoneType'>":
-                            # udp_scan(scan_data_object)
-                            with print_lock:
-                                print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} | {Fore.YELLOW}Filtered{Fore.RESET}")
-                            port_counter += 1
-
-                elif response.haslayer(UDP):
+                elif response.haslayer(UDP):  # Port is open
                     with print_lock:
                         print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET}")
                     open_ports.append(port)
                     port_counter += 1
 
-                elif response.haslayer(ICMP):
+                elif response.haslayer(ICMP):  # port is closed
                     if int(response.getlayer(ICMP).type) == ICMP_UNREACHABLE_ERROR and int(
                             response.getlayer(ICMP).code) == ICMP_UNREACHABLE_ERROR:
-                        pass  # port is closed
+                        pass
 
                     if int(response.getlayer(ICMP).type) == ICMP_UNREACHABLE_ERROR and int(
                             response.getlayer(ICMP).code) in ICMP_UNREACHABLE_ERROR_NUMBERS:
-                        with print_lock:
-                            print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} | {Fore.YELLOW}Filtered{Fore.RESET}")
+                        with print_lock:  # port is filtered
+                            print(f"Port {port} - {Fore.YELLOW}Filtered{Fore.RESET}")
                         filtered_ports.append(port)
                         port_counter += 1
 
@@ -95,6 +94,9 @@ def udp_scan(scan_data_object):
         'scanned ports': ports,
         'open ports': {
             'port number': open_ports
+        },
+        'open or filtered ports': {
+            'port number': open_or_filtered_ports
         },
         'filtered ports': {
             'port number': filtered_ports
