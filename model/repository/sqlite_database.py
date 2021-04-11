@@ -12,7 +12,7 @@ connection = sqlite3.connect(rf'{path}scan_results.db')  # Opens Connection to S
 cursor = connection.cursor()
 
 
-async def save_scan_info_to_database(scan_output):
+def save_scan_info_to_database(scan_output):
     """Database connection setup"""
 
     create_db()  # Creates database table
@@ -42,7 +42,7 @@ def data_entry(scan_output):
     ip = scan_output.get("ip")
     scan_type = scan_output.get("scan type")
     scanned_ports = scan_output.get("scanned ports")
-    ports = scan_output['open ports']['number']
+    ports = scan_output['open ports']['port number']
     banners = scan_output['open ports']['banner']
 
     all_ports = ""

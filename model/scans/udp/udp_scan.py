@@ -101,10 +101,11 @@ def udp_scan(scan_data_object):
         }
     }
 
-    if save_output_in_database:
-        save_scan_info_to_database(scan_output)
+    if port_counter > 0:
+        if save_output_in_database:
+            save_scan_info_to_database(scan_output)
 
-    if write_output_to_file:
-        save_scan_info_to_file(scan_output)
+        if write_output_to_file:
+            save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)

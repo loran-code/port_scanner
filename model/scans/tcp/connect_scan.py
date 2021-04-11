@@ -27,11 +27,11 @@ def connect_scan(scan_data_object):
 
     open_ports = []
     banner_info = []
+    port_counter = 0
 
     tick = start_scan_info(ip, "TCP Connect scan")
 
     try:
-        port_counter = 0
         for port in ports:
             try:
                 sock = tcp_setup(timeout)  # Setup TCP socket
@@ -65,10 +65,6 @@ def connect_scan(scan_data_object):
     finally:
         sock.close()
 
-    # open_ports = list(zip(open_ports, banner_info))
-    # print(open_ports)
-    # print(type(open_ports))
-    # print(ports)
     now = datetime.now()
     scan_output = {
         'date time': str(now.strftime("%d-%m-%Y %H:%M")),
@@ -76,16 +72,17 @@ def connect_scan(scan_data_object):
         'scan type': "tcp connect scan",
         'scanned ports': ports,
         'open ports': {
-            'number': open_ports,
+            'port number': open_ports,
             'banner': banner_info
         }
     }
 
-    if save_output_in_database:
-        save_scan_info_to_database(scan_output)
+    if port_counter > 0:
+        if save_output_in_database:
+            save_scan_info_to_database(scan_output)
 
-    if write_output_to_file:
-        save_scan_info_to_file(scan_output)
+        if write_output_to_file:
+            save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)
 

@@ -11,8 +11,12 @@ def active_banner_grab(sock):
         return banner
     except socket.gaierror:
         print(f"    {Fore.RED}No banner{Fore.RESET} - Hostname could not be resolved")
+        no_banner = "No banner available"
+        return no_banner
     except socket.error:
         print(f"    {Fore.RED}No banner{Fore.RESET} - Could not connect")
+        no_banner = "No banner available"
+        return no_banner
 
 
 def passive_banner_grab(target, port):

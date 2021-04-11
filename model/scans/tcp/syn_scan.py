@@ -38,7 +38,7 @@ def syn_scan(scan_data_object):
             src_port = RandShort()  # Generate Port Number
             try:
                 # Send SYN and receive RST-ACK or SYN-ACK
-                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S", timeout=timeout))
+                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S"), timeout=timeout)
 
                 # Extract flags of received packet
                 pkt_flags = syn_ack_pkt.getlayer(TCP).flags
@@ -86,10 +86,11 @@ def syn_scan(scan_data_object):
         }
     }
 
-    if save_output_in_database:
-        save_scan_info_to_database(scan_output)
+    if port_counter > 0:
+        if save_output_in_database:
+            save_scan_info_to_database(scan_output)
 
-    if write_output_to_file:
-        save_scan_info_to_file(scan_output)
+        if write_output_to_file:
+            save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)
