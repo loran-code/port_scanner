@@ -37,10 +37,12 @@ def finish_scan_info(port_counter, tick, scan_data_object):
     print(f"Scan completed in: {scan_time}")
     print(60 * f"{Fore.YELLOW}-{Fore.RESET}")
 
-    if write_output_to_file:
-        print(f"{Fore.GREEN}--{Fore.RESET} output saved to JSON and XML within the \"scan_output\" folder")
-    if save_output_in_database:
-        print(f"{Fore.GREEN}--{Fore.RESET} output saved to database: \"scan_result.db\" within the repository folder")
+    if port_counter > 0:
+        if write_output_to_file:
+            print(f"{Fore.GREEN}--{Fore.RESET}output saved to JSON and XML within the \"scan_output\" folder")
+        if save_output_in_database:
+            print(f"{Fore.GREEN}--{Fore.RESET}output saved to database: \"scan_result.db\" within the repository folder")
+
     if sound:
         alert_scan_finish_with_sound()
 
@@ -55,21 +57,21 @@ def alert_scan_finish_with_sound():
     engine.stop()
 
 
-async def play_knocking_sound():
-    """"Turn on a knocking sound in order to enhance the port scanning experience"""
+def play_knocking_sound():
+    """"Turn on knocking sound in order to enhance the port scanning experience"""
 
-    await asyncio.sleep(0)
+    # await asyncio.sleep(0)
 
     import playsound
     directory = "view/static/sound"
     playsound.playsound(f"{directory}/knock.mp3", True)
-    await asyncio.sleep(1)
+    # await asyncio.sleep(1)
 
 
-async def play_joke():
-    """"Play a knocking joke, I bet people will love this!"""
+def play_joke():
+    """"Make a networking joke, I bet people will love this!"""
 
-    await asyncio.sleep(0)
+    # await asyncio.sleep(0)
 
     engine = pyttsx3.init()
     engine.setProperty('rate', 120)  # voice speed

@@ -55,30 +55,42 @@ def xml_format(scan_output, directory):
     #     scannend_ports = ET.SubElement(ports, 'scannedports')
     #     scannend_ports.text = str(port)
 
-    # check_scan_output()
-
     open_ports = scan_output['open ports']['port number']
-    # banners = scan_output['open ports']['banner']
-    banners = [None]
-    # if banners is None:
-    #     banners = [None]
 
-    ports_banners = zip(open_ports, banners)
+    try:  # Checks if tcp connect (banner grab) scan has been used
 
-    for port, banner in ports_banners:
-        open_port = ET.SubElement(ports, 'open')
-        open_port.text = str(port)
-        open_banner = ET.SubElement(open_port, 'banner')
-        open_banner.text = str(banner)
+        if scan_output['open ports']['banner'] is not None:
+            banners = scan_output['open ports']['banner']
+
+            ports_banners = zip(open_ports, banners)
+
+            for port, banner in ports_banners:
+                open_port = ET.SubElement(ports, 'open')
+                open_port.text = str(port)
+                open_banner = ET.SubElement(open_port, 'banner')
+                open_banner.text = str(banner)
+
+    except KeyError:  # tcp connect has not been used
+        pass
+
+    try:  # Checks if scan has found filtered ports
+        filtered_ports = scan_output['filtered ports']['port number']
+
+        for port in filtered_ports:
+            filtered_port = ET.SubElement(ports, 'filtered')
+            filtered_port.text = str(port)
+
+        for port in open_ports:
+            open_port = ET.SubElement(ports, 'open')
+            open_port.text = str(port)
+
+    except KeyError:  # Filtered ports have not been found
+        pass
 
     data_to_xml = ET.tostring(root, encoding='unicode', method='xml')
 
     with open(xml_file, 'w') as file:
         file.write(data_to_xml)
-
-
-def check_scan_output():
-    pass
 
 
 def check_platform():

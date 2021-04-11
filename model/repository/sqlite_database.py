@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import socket
-from datetime import datetime
 from sqlite3 import DatabaseError
 
 directory = "model\\repository\\"
@@ -12,7 +11,7 @@ connection = sqlite3.connect(rf'{path}scan_results.db')  # Opens Connection to S
 cursor = connection.cursor()
 
 
-async def save_scan_info_to_database(scan_output):
+def save_scan_info_to_database(scan_output):
     """Database connection setup"""
 
     create_db()  # Creates database table
@@ -25,48 +24,56 @@ def create_db():
     try:
         cursor.execute("CREATE TABLE IF NOT EXISTS scan_results (id INTEGER PRIMARY KEY,"
                        "date_time timestamp,"
-                       "ip TEXT, scan_type TEXT, scanned_ports TEXT,"
+                       "ip TEXT, scan_type TEXT, scanned_ports TEXT, filtered_ports TEXT,"
                        "open_ports TEXT, banner TEXT, scanned_by_computer TEXT)")
     except DatabaseError:
         print(DatabaseError)
 
 
 def data_entry(scan_output):
-    """Inserts data into table and close the connection"""
+    """Inserts data into database table and close the connection"""
 
-    now = datetime.now()
-    date_time = now.strftime("%d-%m-%Y %H:%M:%S")
     computer_name = socket.gethostname()
 
     # Get scan output values from dictionary
+    date_time = scan_output.get("date time")
     ip = scan_output.get("ip")
     scan_type = scan_output.get("scan type")
+
     scanned_ports = scan_output.get("scanned ports")
-    ports = scan_output['open ports']['number']
-    banners = scan_output['open ports']['banner']
+    all_ports = parse_scannend_ports(scanned_ports)
 
-    all_ports = ""
-    for port in scanned_ports:
-        port = str(port)
-        all_ports += f"{port}, "
-
-    open_ports = ""
-    for port in ports:
-        port = str(port)
-        open_ports += f"{port}, "
+    ports = scan_output['open ports']['port number']
+    open_ports = parse_scannend_open_ports(ports)
 
     open_banners = ""
-    for banner in banners:
-        open_banners += f"{banner}, "
+    try:  # Checks if tcp connect (banner grab) scan has been used
+
+        if scan_output['open ports']['banner'] is not None:
+            banners = scan_output['open ports']['banner']
+            open_banners = parse_scanned_banners(banners)
+
+    except KeyError:  # tcp connect has not been used
+        pass
+
+    filtered_port_list = ""
+    try:  # Checks if scan has found filtered ports
+
+        if scan_output['filtered ports']['port number'] is not None:
+            filtered_ports = scan_output['filtered ports']['port number']
+            filtered_port_list = parse_scanned_filtered_ports(filtered_ports)
+
+    except KeyError:  # Filtered ports have not been found
+        pass
 
     # Insert values into the db table
-    params = (date_time, ip, scan_type, all_ports, open_ports, open_banners, computer_name)
+    params = (date_time, ip, scan_type, all_ports, open_ports, filtered_port_list, open_banners, computer_name)
 
     cursor.execute("INSERT INTO scan_results (date_time, ip, scan_type, scanned_ports,"
-                   " open_ports, banner, scanned_by_computer) "
-                   " VALUES (?,?,?,?,?,?,?)", params)
+                   " open_ports, filtered_ports, banner, scanned_by_computer) "
+                   " VALUES (?,?,?,?,?,?,?,?)", params)
 
-    connection.commit()
+    connection.commit()  # Commit the selected data into the database
 
     cursor.close()
     connection.close()
@@ -89,3 +96,48 @@ def query_db(ip):
 
     cursor.close()
     connection.close()
+
+
+def parse_scannend_ports(scanned_ports):
+    all_ports = ""
+
+    for port in scanned_ports:
+        port = str(port)
+        all_ports += f"{port}, "
+
+    all_ports = all_ports[:-2]
+
+    return all_ports
+
+
+def parse_scannend_open_ports(ports):
+    open_ports = ""
+
+    for port in ports:
+        port = str(port)
+        open_ports += f"{port}, "
+
+    open_ports = open_ports[:-2]
+
+    return open_ports
+
+
+def parse_scanned_banners(banners):
+    open_banners = ""
+
+    for banner in banners:
+        open_banners += f"{banner}, "
+    open_banners = open_banners[:-2]
+
+    return open_banners
+
+
+def parse_scanned_filtered_ports(filtered_ports):
+    filtered_port_list = ""
+
+    for port in filtered_ports:
+        port = str(port)
+        filtered_port_list += f"{port}, "
+
+    filtered_port_list = filtered_port_list[:-2]
+    return filtered_port_list

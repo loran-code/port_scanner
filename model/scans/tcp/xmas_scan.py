@@ -44,7 +44,7 @@ def xmas_scan(scan_data_object):
                 if str(type(response)) == "<class 'NoneType'>":
                     with print_lock:
                         print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET} | {Fore.YELLOW}Filtered{Fore.RESET}")
-                    open_ports.append(str(port) + " open/filtered")
+                    open_ports.append(port)
                     port_counter += 1
 
                 elif response.haslayer(TCP):
@@ -56,7 +56,7 @@ def xmas_scan(scan_data_object):
                                 in ICMP_UNREACHABLE_ERROR_NUMBERS:
                             with print_lock:
                                 print(f"Port {port} - {Fore.YELLOW}Filtered{Fore.RESET}")
-                            filtered_ports.append(str(port) + " filtered")
+                            filtered_ports.append(port)
                             port_counter += 1
 
             except KeyboardInterrupt:
@@ -76,24 +76,25 @@ def xmas_scan(scan_data_object):
         print(f"{Fore.RED}[!]{Fore.RESET} Could not connect to server")
         exit()
 
-    now = datetime.now()
+    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     scan_output = {
-        'date time': str(now.strftime("%d-%m-%Y %H:%M")),
+        'date time': str(date_time),
         'ip': ip,
         'scan type': "tcp xmas scan",
         'scanned ports': ports,
+        'open ports': {
+            'port number': open_ports
+        },
         'filtered ports': {
             'port number': filtered_ports
         },
-        'open ports': {
-            'port number': open_ports
-        }
     }
 
-    if save_output_in_database:
-        save_scan_info_to_database(scan_output)
+    if port_counter > 0:
+        if save_output_in_database:
+            save_scan_info_to_database(scan_output)
 
-    if write_output_to_file:
-        save_scan_info_to_file(scan_output)
+        if write_output_to_file:
+            save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)

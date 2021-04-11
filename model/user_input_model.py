@@ -1,4 +1,3 @@
-import socket
 from ipaddress import IPv4Address
 
 from colorama import Fore

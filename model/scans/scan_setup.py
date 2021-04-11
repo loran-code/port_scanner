@@ -11,14 +11,46 @@ from model.scans.udp.udp_scan import udp_scan
 
 
 def target_is_up(ip):
+    """Check if target is up by pinging the given ip address."""
 
     try:
-        return ping(ip, count=2, timeout=2).success()
+        target_up = ping(ip, count=2, timeout=2).success()
+
+        if target_up is True:
+            return True
+        else:
+            return valid_input()  # If user wants to continue the scan the value is True
 
     except ConnectionError as errorCode:  # If ping fails
         print(errorCode)
         print(f"{Fore.RED}[!]{Fore.RESET} Could not ping target")
         print(f"{Fore.RED}[!]{Fore.RESET} Exiting")
+        exit()
+
+
+def valid_input():
+    """Check for valid user input. stop scan if user enters "n" continue scan if user enters "y"""
+
+    print("Target does not respond to ping and might be offline.\n Would You like to continue scanning? y/n")
+    target_down = ""
+
+    while True:
+        try:
+            target_down = str(input("> ")).lower()
+        except ValueError:
+            print("Please Enter \"y\" or \"n\" as input.")
+            continue
+
+        else:
+            if target_down == "y" or target_down == "n":
+                break
+            else:
+                print("Please Enter \"y\" or \"n\" as input.")
+
+    if target_down == "y":
+        return True
+    elif target_down == "n":
+        print(f"{Fore.GREEN}[*]{Fore.RESET} User canceled scan - Thank you for knocking, bye!")
         exit()
 
 
@@ -35,8 +67,7 @@ def start_scan(scan_data_object):
 
     # todo multi threaded
     if knock:
-        pass
-        # asyncio.run(play_knocking_sound())
+        play_knocking_sound()
 
     # todo multi threaded
     if joke:

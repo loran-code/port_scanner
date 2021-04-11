@@ -87,24 +87,25 @@ def udp_scan(scan_data_object):
         print(f"{Fore.RED}[!]{Fore.RESET} Could not connect to server")
         exit()
 
-    now = datetime.now()
+    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     scan_output = {
-        'date time': str(now.strftime("%d-%m-%Y %H:%M")),
+        'date time': str(date_time),
         'ip': ip,
         'scan type': "udp scan",
         'scanned ports': ports,
+        'open ports': {
+            'port number': open_ports
+        },
         'filtered ports': {
             'port number': filtered_ports
         },
-        'open ports': {
-            'port number': open_ports
-        }
     }
 
-    if save_output_in_database:
-        save_scan_info_to_database(scan_output)
+    if port_counter > 0:
+        if save_output_in_database:
+            save_scan_info_to_database(scan_output)
 
-    if write_output_to_file:
-        save_scan_info_to_file(scan_output)
+        if write_output_to_file:
+            save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)

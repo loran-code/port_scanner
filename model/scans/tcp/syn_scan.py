@@ -38,7 +38,7 @@ def syn_scan(scan_data_object):
             src_port = RandShort()  # Generate Port Number
             try:
                 # Send SYN and receive RST-ACK or SYN-ACK
-                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S", timeout=timeout))
+                syn_ack_pkt = sr1(IP(dst=ip) / TCP(sport=src_port, dport=port, flags="S"), timeout=timeout)
 
                 # Extract flags of received packet
                 pkt_flags = syn_ack_pkt.getlayer(TCP).flags
@@ -49,9 +49,10 @@ def syn_scan(scan_data_object):
                 if pkt_flags == SYNACK:  # Cross reference Flags
                     with print_lock:
                         print(f"Port {port} - {Fore.GREEN}Open{Fore.RESET}")
-                        send(rst_pkt)  # Send RST packet
-                        open_ports.append(port)  # add open port to list
-                        port_counter += 1
+                    send(rst_pkt)  # Send RST packet
+                    open_ports.append(port)  # add open port to list
+                    port_counter += 1
+
                 else:
                     send(rst_pkt)
 
@@ -75,9 +76,9 @@ def syn_scan(scan_data_object):
         print(f"{Fore.RED}[!]{Fore.RESET} Could not connect to server")
         exit()
 
-    now = datetime.now()
+    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     scan_output = {
-        'date time': str(now.strftime("%d-%m-%Y %H:%M")),
+        'date time': str(date_time),
         'ip': ip,
         'scan type': "tcp syn scan",
         'scanned ports': ports,
@@ -86,10 +87,11 @@ def syn_scan(scan_data_object):
         }
     }
 
-    if save_output_in_database:
-        save_scan_info_to_database(scan_output)
+    if port_counter > 0:
+        if save_output_in_database:
+            save_scan_info_to_database(scan_output)
 
-    if write_output_to_file:
-        save_scan_info_to_file(scan_output)
+        if write_output_to_file:
+            save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)
