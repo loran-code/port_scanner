@@ -14,8 +14,7 @@ def parse_user_arguments():
     the variables as arguments to other methods
     """
 
-    parser = argparse.ArgumentParser()
-    # parser = argparse.ArgumentParser(description=banner())
+    parser = argparse.ArgumentParser(description=banner())
     parser.add_argument("-t", "-target", metavar="", type=str, required=True, help="IP4V address that needs to be "
                                                                                    "scanned")
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
@@ -36,26 +35,24 @@ def parse_user_arguments():
     parser.add_argument("-joke", action='store_true', help="Tell a joke (requires audio)")
     args = vars(parser.parse_args())  # Create dictionary from the given command line arguments
 
-    ip = parse_user_ip_options(args)  # Parse the given ip
-    remaining_options = parse_remaining_options(args)  # Parse the remaining options
-
-    if remaining_options.get("dbq"):  # Query database with the last records of given ip
-        query_db(ip)
+    if args.get("dbq"):  # Query database with the last records of given ip
+        query_db(args.get("t"))
         quit()
 
+    ip = parse_user_ip_options(args)  # Parse the given ip
     ports = parse_user_port_options(args)  # Parse the given ports
     scan_type = parse_user_scan_options(args)  # Parse the given scan_type
+    remaining_options = parse_remaining_options(args)  # Parse the remaining options
 
     # Create object with the parsed data input
     scan_data_object = UserInputModel(ip, ports, scan_type, **remaining_options)
 
     # Pass the object to the start scan method
     start_scan(scan_data_object)
-    return None
 
 
 def parse_user_ip_options(args):
-    """Parse the user input and returns what the ip of the target is"""
+    """Parse the user input and returns the ip if it's a valid ip"""
 
     ip = args.get("t")
     return UserInputModel.check_ip(ip)
@@ -77,12 +74,13 @@ def parse_user_port_options(args):
 
         if len(port_range) < 2 or len(port_range) > 2:
             print(f"{Fore.RED}--{Fore.RESET}Specify a range with 2 integers e.g. -pr / -portrange 20 100")
-            exit(1)
+            exit()
 
         if port_range[0] > port_range[1]:
             print(
-                f"{Fore.RED}--{Fore.RESET}Specify the smallest number before specifying the large number. e.g. -pr / -portrange 20 100")
-            exit(1)
+                f"{Fore.RED}--{Fore.RESET}Specify the smallest number before specifying the large number. e.g. -pr / "
+                f"-portrange 20 100")
+            exit()
         else:
             port_range = range(port_range[0], port_range[1])
             return UserInputModel.check_port_range(port_range)
@@ -93,7 +91,7 @@ def parse_user_port_options(args):
 
 
 def parse_remaining_options(args):
-    """Parse the user input and returns what remaining options have been chosen"""
+    """Parse the user input and return what remaining options have been chosen"""
 
     remaining_options = {"to": args.get("to"), "th": args.get("th")}
 
@@ -119,7 +117,8 @@ def parse_remaining_options(args):
 
 
 def parse_user_scan_options(args):
-    """Parse the user input and returns what scan options has been chosen"""
+    """Parse the user input and returns what scan options has been chosen.
+    Default to connect scan when the scan type is omitted"""
 
     if args.get("tc"):
         return "tc"

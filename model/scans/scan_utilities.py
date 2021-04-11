@@ -3,7 +3,7 @@ import colorama
 from colorama import Fore
 import pyttsx3
 
-colorama.init()
+colorama.init()  # Initialize color output for terminals
 
 
 def start_scan_info(ip, scan_type):

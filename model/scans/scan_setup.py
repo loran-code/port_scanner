@@ -1,4 +1,3 @@
-import multiprocessing
 import concurrent.futures
 from colorama import Fore
 from pythonping import ping
@@ -57,11 +56,13 @@ def valid_input():
 
 def start_scan(scan_data_object):
     """Start user specified scan method and database connection"""
+
+    # Get required variables from object
     database_connection = scan_data_object.save_to_database
     knock = scan_data_object.knock
     joke = scan_data_object.joke
     scan_type = scan_data_object.scan_type
-    threads = scan_data_object.threads
+    # threads = scan_data_object.threads  # Has not been implemented yet
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
 

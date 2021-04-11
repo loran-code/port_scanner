@@ -1,16 +1,13 @@
 from colorama import Fore
 from scapy.all import *
 from scapy.layers.inet import IP, TCP, ICMP
-from threading import RLock
-from queue import Queue
 
 from model.scan_output import save_scan_info_to_file
 from model.scans.scan_utilities import finish_scan_info, start_scan_info
 from model.constants import SYNACK, RSTACK, ICMP_UNREACHABLE_ERROR, ICMP_UNREACHABLE_ERROR_NUMBERS
 from model.repository.sqlite_database import save_scan_info_to_database
 
-que = Queue()
-print_lock = RLock()
+print_lock = threading.RLock()  # Required for printing output in consecutive order
 
 
 def syn_scan(scan_data_object):
@@ -24,9 +21,9 @@ def syn_scan(scan_data_object):
     ip = scan_data_object.target
     ports = scan_data_object.ports
     timeout_time = scan_data_object.timeout
-    threads = scan_data_object.threads
     write_output_to_file = scan_data_object.output_to_file
     save_output_in_database = scan_data_object.save_to_database
+    # threads = scan_data_object.threads  # Not been implemented yet
 
     open_ports = []
     filtered_ports = []

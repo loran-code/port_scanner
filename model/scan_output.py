@@ -16,8 +16,8 @@ def save_scan_info_to_file(scan_output):
 
 def json_format(scan_output, directory):
     """parse scan data into json format"""
-    now = datetime.now()
-    date_time = now.strftime("%d-%m-%Y_time_%H-%M")
+
+    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     ip = scan_output.get("ip")
     scan_output.pop("scanned ports")  # Comment out the code if you want to list all the scanned ports
 
@@ -30,8 +30,8 @@ def json_format(scan_output, directory):
 
 def xml_format(scan_output, directory):
     """parse scan data into xml format"""
-    now = datetime.now()
-    date_time = now.strftime("%d-%m-%Y_time_%H-%M")
+
+    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     ip = scan_output.get("ip")
 
     xml_file = f'IP_{ip}_DATE_{date_time}.xml'
@@ -86,10 +86,6 @@ def xml_format(scan_output, directory):
             open_or_filtered_port = ET.SubElement(ports, 'open_or_filtered')
             open_or_filtered_port.text = str(port)
 
-        # for port in open_ports:
-        #     open_port = ET.SubElement(ports, 'open')
-        #     open_port.text = str(port)
-
     except KeyError:  # Filtered ports have not been found
         pass
 
@@ -99,10 +95,6 @@ def xml_format(scan_output, directory):
         for port in filtered_ports:
             filtered_port = ET.SubElement(ports, 'filtered')
             filtered_port.text = str(port)
-
-        # for port in open_ports:
-        #     open_port = ET.SubElement(ports, 'open')
-        #     open_port.text = str(port)
 
     except KeyError:  # Filtered ports have not been found
         pass
@@ -114,8 +106,9 @@ def xml_format(scan_output, directory):
 
 
 def check_platform():
-    """Check what the underlying os is and create a directory
-    where the output of the scan is being saved"""
+    """Check the Operating System and create a directory
+    where the output of the scan will be saved"""
+
     directory = "scan_output"
     mode = 0o666
 

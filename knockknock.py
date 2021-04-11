@@ -8,15 +8,7 @@ from controller.user_input_controller import parse_user_arguments
 
 
 def main():
-    """
-    Get user input
-    - type of scan tcp/udp
-        - UDP scan
-        - XMAS scan
-    - code information
-    - tests
-        """
-    parse_user_arguments()
+    parse_user_arguments()  # Starts the program and parses the CLI input.
 
 
 if __name__ == '__main__':

@@ -78,7 +78,7 @@ class UserInputModel:
             else:
                 print(f"{Fore.RED}--{Fore.RESET}No valid port number has been given. \n"
                       "Make sure the portnumber is not smaller then 1 and larger then 65535.")
-                exit(1)
+                exit()
 
         valid_ports.sort()
 

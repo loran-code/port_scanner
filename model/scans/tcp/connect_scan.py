@@ -1,10 +1,7 @@
-import asyncio
 import socket
 import threading
 from datetime import datetime
-from queue import Queue
 from colorama import Fore
-import concurrent.futures
 
 from model.scan_output import save_scan_info_to_file
 from model.scans.banner_grab import active_banner_grab
@@ -12,8 +9,7 @@ from model.scans.scan_utilities import finish_scan_info, start_scan_info
 from model.scans.tcp.tcp import tcp_setup
 from model.repository.sqlite_database import save_scan_info_to_database
 
-queue = Queue()  #
-print_lock = threading.RLock()  #
+print_lock = threading.RLock()  # Required for printing output in consecutive order
 
 
 def connect_scan(scan_data_object):
@@ -23,9 +19,9 @@ def connect_scan(scan_data_object):
     ip = scan_data_object.target
     ports = scan_data_object.ports
     timeout_time = scan_data_object.timeout
-    threads = scan_data_object.threads
     write_output_to_file = scan_data_object.output_to_file
     save_output_in_database = scan_data_object.save_to_database
+    # threads = scan_data_object.threads  # Not been implemented yet
 
     open_ports = []
     banner_info = []
@@ -87,29 +83,3 @@ def connect_scan(scan_data_object):
             save_scan_info_to_file(scan_output)
 
     finish_scan_info(port_counter, tick, scan_data_object)
-
-
-# t1 = threading.Thread(target=connect_scan)
-# t2 = threading.Thread(target=connect_scan)
-# t1.start()
-# t2.start()
-#
-# t1.join()
-# t2.join()
-# def worker():
-#     while True:
-#         worker = queue.get()
-#         connect_scan(worker)
-#         queue.task_done()
-#
-#
-# def threader(threads, ports):
-#     for x in range(threads):
-#         thread = threading.Thread(target=worker())
-#         thread.daemon = True
-#         thread.start()
-#
-#     for worker in range(ports):
-#         queue.put(worker)
-#
-#     queue.join()

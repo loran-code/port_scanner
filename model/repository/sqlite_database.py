@@ -3,10 +3,10 @@ import sqlite3
 import socket
 from sqlite3 import DatabaseError
 
+#  Database setup requirements
 directory = "model\\repository\\"
 parent_directory = os.getcwd()
 path = os.path.join(parent_directory, directory)
-# async with sqlite3.connect(rf'{path}scan_results.db') as connection:
 connection = sqlite3.connect(rf'{path}scan_results.db')  # Opens Connection to SQLite database
 cursor = connection.cursor()
 
@@ -63,7 +63,7 @@ def data_entry(scan_output):
             open_or_filtered_ports = scan_output['open or filtered ports']['port number']
             open_or_filtered_port_list = parse_scanned_open_or_filtered_ports(open_or_filtered_ports)
 
-    except KeyError:  # Filtered ports have not been found
+    except KeyError:  # Open or filtered ports have not been found
         pass
 
     filtered_port_list = ""
