@@ -13,7 +13,6 @@ class UserInputModel:
 
     def __init__(self, target: str, ports: [int], scan_type: str, **kwargs):
         """Constructor check if the user input is valid and set default settings if none are given by the user"""
-
         self.target = target
         self.ports = ports
         self.scan_type = scan_type
@@ -28,7 +27,6 @@ class UserInputModel:
     @staticmethod
     def check_ip(userinput):
         """Check if a valid ip address has been given"""
-
         if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", userinput):  # Check if a hostname has been given
             try:
                 ip = socket.gethostbyname(userinput)  # Change hostname to ip address
@@ -63,7 +61,6 @@ class UserInputModel:
     @staticmethod
     def check_port(ports):
         """Check if valid ports have been given"""
-
         if ports is None:
             ports = list(range(1, 1001))  # Assign the first 1000 ports if no port has been given
 
@@ -92,7 +89,6 @@ class UserInputModel:
     @staticmethod
     def check_port_range(ports):
         """Check if a valid port range has been given and return a list of valid ports"""
-
         for port in ports:
             if port in range(MIN_PORT_NUMBER, MAX_PORT_NUMBER):
                 valid_ports.append(port)

@@ -14,7 +14,6 @@ def syn_scan(scan_data_object):
     """syn scan - start half-open connection(SYN, SYN ACK, RST) with the target.
     Takes the origin port from the target reply header
     https://nmap.org/book/synscan.html"""
-
     conf.verb = 0  # Suppress scapy output in terminal
 
     # Get required variables from object

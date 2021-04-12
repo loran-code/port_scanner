@@ -16,8 +16,7 @@ def save_scan_info_to_file(scan_output):
 
 def json_format(scan_output, directory):
     """parse scan data into json format"""
-
-    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    date_time = datetime.now().strftime("%d-%m-%Y_Time_%H-%M-%S")
     ip = scan_output.get("ip")
     scan_output.pop("scanned ports")  # Comment out the code if you want to list all the scanned ports
 
@@ -30,8 +29,7 @@ def json_format(scan_output, directory):
 
 def xml_format(scan_output, directory):
     """parse scan data into xml format"""
-
-    date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    date_time = datetime.now().strftime("%d-%m-%Y_Time_%H-%M-%S")
     ip = scan_output.get("ip")
 
     xml_file = f'IP_{ip}_DATE_{date_time}.xml'
@@ -108,7 +106,6 @@ def xml_format(scan_output, directory):
 def check_platform():
     """Check the Operating System and create a directory
     where the output of the scan will be saved"""
-
     directory = "scan_output"
     mode = 0o666
 

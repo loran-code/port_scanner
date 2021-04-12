@@ -12,7 +12,6 @@ from model.scans.udp.udp_scan import udp_scan
 
 def target_is_up(ip):
     """Check if target is up by pinging the given ip address."""
-
     try:
         target_up = ping(ip, count=2, timeout=2).success()
 
@@ -30,7 +29,6 @@ def target_is_up(ip):
 
 def valid_input():
     """Check for valid user input. stop scan if user enters "n" continue scan if user enters "y"""
-
     print("Target does not respond to ping and might be offline.\n Would You like to continue scanning? y/n")
     target_down = ""
 
@@ -56,7 +54,6 @@ def valid_input():
 
 def start_scan(scan_data_object):
     """Start user specified scan method and database connection"""
-
     # Get required variables from object
     database_connection = scan_data_object.save_to_database
     knock = scan_data_object.knock

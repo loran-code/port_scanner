@@ -13,14 +13,12 @@ cursor = connection.cursor()
 
 def save_scan_info_to_database(scan_output):
     """Database connection setup"""
-
     create_db()  # Creates database table
     data_entry(scan_output)  # Parse the scan output into the database table
 
 
 def create_db():
     """Creates a table within the database file if it does not exists"""
-
     try:
         cursor.execute("CREATE TABLE IF NOT EXISTS scan_results (id INTEGER PRIMARY KEY,"
                        "date_time timestamp,"
@@ -33,7 +31,6 @@ def create_db():
 
 def data_entry(scan_output):
     """Inserts data into database table and close the connection"""
-
     computer_name = socket.gethostname()
 
     # Get scan output values from dictionary
@@ -94,7 +91,6 @@ def data_entry(scan_output):
 
 def query_db(ip):
     """Query the database and return all the info on the specified ip address"""
-
     try:
         cursor.execute("SELECT * FROM scan_results WHERE ip=?", (ip,))
         rows = cursor.fetchall()
@@ -112,6 +108,7 @@ def query_db(ip):
 
 
 def parse_scannend_ports(scanned_ports):
+    """parse the values of a list into a string"""
     all_ports = ""
 
     for port in scanned_ports:
@@ -124,6 +121,7 @@ def parse_scannend_ports(scanned_ports):
 
 
 def parse_scannend_open_ports(ports):
+    """parse the values of a list into a string"""
     open_ports = ""
 
     for port in ports:
@@ -136,6 +134,7 @@ def parse_scannend_open_ports(ports):
 
 
 def parse_scanned_banners(banners):
+    """parse the values of a list into a string"""
     open_banners = ""
 
     for banner in banners:
@@ -146,6 +145,7 @@ def parse_scanned_banners(banners):
 
 
 def parse_scanned_open_or_filtered_ports(open_or_filtered_ports):
+    """parse the values of a list into a string"""
     open_or_filtered_port_list = ""
 
     for port in open_or_filtered_ports:
@@ -158,6 +158,7 @@ def parse_scanned_open_or_filtered_ports(open_or_filtered_ports):
 
 
 def parse_scanned_filtered_ports(filtered_ports):
+    """parse the values of a list into a string"""
     filtered_port_list = ""
 
     for port in filtered_ports:

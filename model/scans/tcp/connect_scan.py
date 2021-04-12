@@ -15,7 +15,6 @@ print_lock = threading.RLock()  # Required for printing output in consecutive or
 def connect_scan(scan_data_object):
     """connect scan - creates a 3-way handshake(SYN, SYN ACK, ACK) connection with the target
     https://nmap.org/book/scan-methods-connect-scan.html"""
-
     ip = scan_data_object.target
     ports = scan_data_object.ports
     timeout_time = scan_data_object.timeout

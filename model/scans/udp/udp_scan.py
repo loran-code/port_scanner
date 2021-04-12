@@ -15,7 +15,6 @@ def udp_scan(scan_data_object):
     Depending on what kind of reply the target has given it can be determined weather a port
     is open, filtered or closed.
     https://nmap.org/book/scan-methods-udp-scan.html"""
-
     conf.verb = 0  # Suppress scapy output in terminal
 
     # Get required variables from object

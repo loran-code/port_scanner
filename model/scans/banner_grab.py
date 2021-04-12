@@ -4,7 +4,6 @@ from colorama import Fore
 
 def active_banner_grab(sock):
     """Grabs banner from the target if it's available else return 'no banner available'"""
-
     try:
         banner = sock.recv(1024).decode("utf-8")
         print(f"    {banner}")

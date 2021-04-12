@@ -1,4 +1,5 @@
 import argparse
+
 from colorama import Fore
 
 from model.repository.sqlite_database import query_db
@@ -13,7 +14,6 @@ def parse_user_arguments():
     needed to check for valid input by parsing
     the variables as arguments to other methods
     """
-
     parser = argparse.ArgumentParser(description=banner())
     parser.add_argument("-t", "-target", metavar="", type=str, required=True, help="IP4V address that needs to be "
                                                                                    "scanned")
@@ -53,14 +53,12 @@ def parse_user_arguments():
 
 def parse_user_ip_options(args):
     """Parse the user input and returns the ip if it's a valid ip"""
-
     ip = args.get("t")
     return UserInputModel.check_ip(ip)
 
 
 def parse_user_port_options(args):
     """Parse the user input and returns the ports that will be scanned."""
-
     if args.get("p") is not None:
         ports = args.get("p")
         return UserInputModel.check_port(ports)
@@ -92,7 +90,6 @@ def parse_user_port_options(args):
 
 def parse_remaining_options(args):
     """Parse the user input and return what remaining options have been chosen"""
-
     remaining_options = {"to": args.get("to"), "th": args.get("th")}
 
     if args.get("o"):
@@ -119,7 +116,6 @@ def parse_remaining_options(args):
 def parse_user_scan_options(args):
     """Parse the user input and returns what scan options has been chosen.
     Default to connect scan when the scan type is omitted"""
-
     if args.get("tc"):
         return "tc"
     elif args.get("ts"):

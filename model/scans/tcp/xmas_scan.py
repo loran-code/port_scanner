@@ -15,7 +15,6 @@ def xmas_scan(scan_data_object):
     when the target drops the packet it returns a RST packet stating the port is closed
     if the target gives no response the port is open.
     https://nmap.org/book/scan-methods-null-fin-xmas-scan.html"""
-
     conf.verb = 0  # Suppress scapy output in terminal
 
     # Get required variables from object
