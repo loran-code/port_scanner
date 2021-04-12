@@ -22,8 +22,8 @@
   
 
 ### setup / install
-In the supplied text file `requirements.txt` are the used  libraries and packages.
-However, to my knowledge the amount of libraries is far greater than what is needed.
+In the supplied text file `requirements.txt` are the required libraries and packages.
+
 Install the required programs to your own knowledge.
 
 The command `python3 -m pip freeze > requirements.txt` has been used to capture all used libraries / packages
