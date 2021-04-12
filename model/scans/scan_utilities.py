@@ -38,7 +38,8 @@ def finish_scan_info(port_counter, tick, scan_data_object):
         if write_output_to_file:
             print(f"{Fore.GREEN}--{Fore.RESET}output saved to JSON and XML within the \"scan_output\" folder")
         if save_output_in_database:
-            print(f"{Fore.GREEN}--{Fore.RESET}output saved to database: \"scan_result.db\" within the repository folder")
+            print(f"{Fore.GREEN}--{Fore.RESET}output saved to database: \"scan_result.db\" within the project root "
+                  f"folder")
 
     if sound:
         alert_scan_finish_with_sound()

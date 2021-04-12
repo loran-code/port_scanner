@@ -2,12 +2,58 @@ import os
 import sqlite3
 import socket
 from sqlite3 import DatabaseError
+from sys import platform
+
+
+def check_platform():
+    """Check the Operating System and create a directory
+    where the output of the scan will be saved"""
+    directory = "database/"
+    mode = 0o666
+
+    if platform == "linux" or platform == "linux2":  # linux
+        parent_directory = os.getcwd()
+        path = os.path.join(parent_directory, directory)
+
+        if os.path.exists(path):
+            return path
+
+        try:
+            os.mkdir(path, mode)
+            return path
+        except OSError as error:
+            print(error)
+
+    if platform == "darwin":  # OS X
+        parent_directory = os.getcwd()
+        path = os.path.join(parent_directory, directory)
+
+        if os.path.exists(path):
+            return path
+
+        try:
+            os.mkdir(path, mode)
+            return path
+        except OSError as error:
+            print(error)
+
+    if platform == "win32":  # Windows
+        parent_directory = os.getcwd()
+        path = os.path.join(parent_directory, directory)
+
+        if os.path.exists(path):
+            return path
+
+        try:
+            os.mkdir(path, mode)
+            return path
+        except OSError as error:
+            print(error)
+
 
 #  Database setup requirements
-directory = "model\\repository\\"
-parent_directory = os.getcwd()
-path = os.path.join(parent_directory, directory)
-connection = sqlite3.connect(rf'{path}scan_results.db')  # Opens Connection to SQLite database
+path = check_platform()
+connection = sqlite3.connect(f'{path}scan_results.db')  # Opens Connection to SQLite database
 cursor = connection.cursor()
 
 
