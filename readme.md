@@ -6,6 +6,9 @@
 
 ### Points of attention
 - The programs makes use of the scapy library which requires root/admin priviliges to be run.
+  
+- The program needs the -t flag. It was first set to true but this would cause assertion errors within Linux so it's disabled.
+  - When running the program supply `-h` flag for help or `-t <ip / hostname>` to run the program with basic settings
 - Threading has not been implemented yet but can be given as terminal input. It does nothing "extra" right now but has not been disabled as it would break other parts in the code.
 - within pycharm when querying the database with an ip that does not exist within the database the program "hangs".
   within a terminal this does not happen and will return a valid error
