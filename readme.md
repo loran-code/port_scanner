@@ -73,7 +73,3 @@ My advice is to make a virtual environment and install the packages from the req
 -knock Play knocking sounds during the scan. The full immersive port knocking experience. requires sound
 
 -joke Tell a network related joke. requires sound
-
-#### Must
-- unit testen
-- test code on kali
