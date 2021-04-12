@@ -15,8 +15,7 @@ def parse_user_arguments():
     the variables as arguments to other methods
     """
     parser = argparse.ArgumentParser(description=banner())
-    parser.add_argument("-t", "-target", metavar="", type=str, required=True, help="IP4V address that needs to be "
-                                                                                   "scanned")
+    parser.add_argument("-t", "-target", metavar="", type=str, help="IP4V address that needs to be scanned")
     parser.add_argument("-p", "-port", metavar="", type=int, help="Single port e.g. 80")
     parser.add_argument("-pl", "-portlist", metavar="", nargs='+', type=int, help="Port list e.g. 22 53 80 443")
     parser.add_argument("-pr", "-portrange", metavar="", nargs='+', type=int, help="Port range e.g. 1 1023 (default)")

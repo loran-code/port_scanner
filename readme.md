@@ -39,6 +39,8 @@ My advice is to make a virtual environment and install the packages from the req
 -t Specify the IP address of the target. Either a hostname or IP can be given.
 
 #### Optional flags
+![terminal example](view/static/image/info.png)
+
 -p give a single port to scan
 
 -pl give a list of ports to scan. e.g. 22 53 80 443
